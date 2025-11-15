@@ -6,7 +6,6 @@
 <title>SERIES — Watchlist</title>
 
 <style>
-  /* ===== TODO TU CSS ORIGINAL ===== */
   :root{
     --bg:#0b0f19; --panel:#0f172a; --card:#111827; --text:#e5e7eb; --muted:#9ca3af;
     --accent:#e50914; --accent-2:#b81d24; --ok:#22c55e; --warn:#f59e0b; --line:#1f2937;
@@ -17,6 +16,7 @@
     color:var(--text);
     font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   }
+
   header{
     position:sticky; top:0; z-index:10;
     background:linear-gradient(180deg,rgba(11,15,25,.96),rgba(11,15,25,.75));
@@ -128,50 +128,17 @@
     border-color:#14532d; background:rgba(34,197,94,.18); color:#bbf7d0;
   }
 
-  /* ===== Nuevo diseño de modal compacto (modificado) ===== */
-  .modal-back {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.6);
-    display: none; align-items: center; justify-content: center;
-    z-index: 100;
-    backdrop-filter: blur(4px);
-  }
-  .modal {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    width: 360px;
-    padding: 20px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.45);
-    display: flex; flex-direction: column; gap: 14px;
-    animation: popIn .25s ease;
-  }
-  @keyframes popIn {
-    from {transform: scale(.85); opacity: 0;}
-    to {transform: scale(1); opacity: 1;}
-  }
-  .modal .top {
-    display: flex; align-items: flex-start; gap: 14px;
-  }
-  .modal img {
-    width: 100px; height: 150px;
-    object-fit: cover; border-radius: 10px; border:1px solid var(--line);
-  }
-  .modal .meta h3 {
-    margin: 0; font-size: 1.05rem;
-  }
-  .modal .meta .muted {
-    color: var(--muted); font-size: .9rem; margin-bottom: 6px;
-  }
-  .modal .controls {
-    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-  }
-  .modal input.num {
-    width: 50px; text-align: center;
-  }
-  .modal .bottom {
-    display: flex; flex-direction: column; gap: 10px;
-  }
+  /* ===== Nuevo diseño de modal compacto ===== */
+  .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
+  .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; width: 360px; padding: 20px; box-shadow: 0 8px 40px rgba(0,0,0,0.45); display: flex; flex-direction: column; gap: 14px; animation: popIn .25s ease; }
+  @keyframes popIn { from {transform: scale(.85); opacity: 0;} to {transform: scale(1); opacity: 1;} }
+  .modal .top { display: flex; align-items: flex-start; gap: 14px; }
+  .modal img { width: 100px; height: 150px; object-fit: cover; border-radius: 10px; border:1px solid var(--line); }
+  .modal .meta h3 { margin: 0; font-size: 1.05rem; }
+  .modal .meta .muted { color: var(--muted); font-size: .9rem; margin-bottom: 6px; }
+  .modal .controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .modal input.num { width: 50px; text-align: center; }
+  .modal .bottom { display: flex; flex-direction: column; gap: 10px; }
   .modal button { border-radius: 8px; padding:8px 12px; }
 </style>
 </head>
@@ -190,6 +157,7 @@
           <div id="drop" class="dropdown"></div>
         </div>
         <button id="clear" class="btn-ghost">Limpiar</button>
+        <!-- NUEVO: Filtro -->
         <button id="toggleFilter" class="btn-ghost">Ocultar terminadas</button>
       </div>
     </div>
@@ -201,6 +169,7 @@
   <div id="empty" class="empty" style="display:none;">No tienes series aún. Busca arriba y agrégalas 🍿</div>
 </main>
 
+<!-- Modal -->
 <div id="mb" class="modal-back">
   <div class="modal">
     <div class="top">
@@ -230,11 +199,10 @@
   </div>
 </div>
 
-<script type="module">
-  // ===== FIREBASE INTEGRACIÓN =====
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
-  import { getFirestore, collection, doc, getDocs, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
-
+<!-- ===== Firebase SDK (Compat) + Init — agregado ===== -->
+https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js</script>
+https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
+<script>
   const firebaseConfig = {
     apiKey: "AIzaSyAQpxEWjV_J3AfyBDR4EWEmSrgFjW16z9k",
     authDomain: "series-80d83.firebaseapp.com",
@@ -244,33 +212,66 @@
     appId: "1:959880535049:web:148625072c52de0acbacd8",
     measurementId: "G-7495M6CRN7"
   };
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const coll = collection(db, "series_watchlist");
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const coll = db.collection('series_watchlist');
+</script>
 
-  /* ===== STORAGE FIREBASE ===== */
-  const load = async () => {
-    const snapshot = await getDocs(coll);
-    const data = snapshot.docs.map(d => d.data());
-    return data.sort((a,b)=>b.id.localeCompare(a.id)); // orden descendente por id
+<script>
+  /* ===== STORAGE — reemplazado por Firebase ===== */
+  const KEY = 'series_watchlist_tvmaze_v3';
+
+  // CARGA: devuelve [] de inmediato; luego sincroniza desde Firestore y re-renderiza.
+  const load = () => {
+    setTimeout(async () => {
+      try {
+        const snap = await coll.get();
+        const data = snap.docs.map(d => d.data()).sort((a,b) => b.id.localeCompare(a.id));
+        shows = data.map(s => ({ next: null, checkedAt: 0, ...s }));
+        if (typeof updateFilterButton === 'function') updateFilterButton();
+        if (typeof render === 'function') render();
+        if (typeof refreshAllNext === 'function') refreshAllNext(true);
+      } catch (e) {
+        console.error('Firebase load error:', e);
+      }
+    }, 0);
+    return [];
   };
-  const save = async (data) => {
-    for(const s of data){
-      await setDoc(doc(coll, s.id), s);
-    }
+
+  // GUARDAR: misma firma save(data); escribe/upserta y limpia docs eliminados.
+  const save = (data) => {
+    (async () => {
+      const batch = db.batch();
+      const ids = new Set();
+      data.forEach(s => {
+        if (!s || !s.id) return;
+        ids.add(s.id);
+        batch.set(coll.doc(s.id), s, { merge: true });
+      });
+      await batch.commit();
+
+      // Limpieza: borra lo que ya no está en 'data'
+      const snap = await coll.get();
+      const toDelete = snap.docs.filter(d => !ids.has(d.id));
+      if (toDelete.length) {
+        const delBatch = db.batch();
+        toDelete.forEach(d => delBatch.delete(d.ref));
+        await delBatch.commit();
+      }
+    })().catch(e => console.error('Firebase save error:', e));
   };
-  const deleteFromDB = async (id) => {
-    await deleteDoc(doc(coll,id));
-  };
+
+  // Preferencia del filtro: usamos la misma clave que tu ORIGEN Firebase
   const getHideDone = () => JSON.parse(localStorage.getItem('series_hideDone') || 'false');
   const setHideDone = (v) => localStorage.setItem('series_hideDone', JSON.stringify(!!v));
 
-  /* ===== RESTO DEL JS ORIGINAL ===== */
-  let shows = await load();
+  /* ===== STATE ===== */
+  let shows = load(); // se reemplazará asincrónicamente con Firestore
   let results = [];
   let activeIndex = -1;
   let hideDone = getHideDone();
 
+  /* ===== DOM ===== */
   const q = document.getElementById('q');
   const drop = document.getElementById('drop');
   const clearBtn = document.getElementById('clear');
@@ -278,6 +279,7 @@
   const empty = document.getElementById('empty');
   const toggleFilterBtn = document.getElementById('toggleFilter');
 
+  // Modal
   const mb = document.getElementById('mb');
   const mPoster = document.getElementById('mPoster');
   const mTitle  = document.getElementById('mTitle');
@@ -292,11 +294,14 @@
   const mDelete = document.getElementById('mDelete');
   const mClose  = document.getElementById('mClose');
 
-  function updateFilterButton(){ toggleFilterBtn.textContent = hideDone ? 'Mostrar terminadas' : 'Ocultar terminadas'; }
+  function updateFilterButton(){
+    toggleFilterBtn.textContent = hideDone ? 'Mostrar terminadas' : 'Ocultar terminadas';
+  }
 
-  async function render() {
+  /* ===== RENDER GRID (tu lógica intacta) ===== */
+  function render() {
     grid.innerHTML = '';
-    if (shows.length === 0) { empty.style.display = 'block'; return; }
+    if (!shows || shows.length === 0) { empty.style.display = 'block'; return; }
     empty.style.display = 'none';
 
     const filtered = hideDone
@@ -324,6 +329,7 @@
       title.className = 'title';
       title.textContent = s.title;
 
+      // Badge de siguiente episodio (deja tu helper si lo tenías; aquí versión simple)
       const badge = s.next ? document.createElement('span') : null;
       if (badge){
         badge.className = 'notify';
@@ -333,9 +339,7 @@
 
       card.appendChild(imgEl);
       card.appendChild(title);
-
       card.onclick = () => openModal(s);
-
       grid.appendChild(card);
     }
   }
@@ -348,72 +352,154 @@
     mTotal.textContent = `de ${show.total || 0}`;
     const percent = show.total ? (show.curr || 0)/show.total*100 : 0;
     mBar.style.width = percent+'%';
-
     mMarkDone.textContent = (show.curr >= show.total) ? 'Desmarcar terminada' : 'Marcar como terminada';
-
     mb.style.display='flex';
 
     mMinus.onclick = async ()=>{ show.curr = Math.max(0,(show.curr||0)-1); await save(shows); render(); openModal(show); };
-    mPlus.onclick = async ()=>{ show.curr = Math.min(show.total||(show.curr||0)+1,(show.curr||0)+1); await save(shows); render(); openModal(show); };
+    mPlus.onclick  = async ()=>{ show.curr = Math.min(show.total||(show.curr||0)+1,(show.curr||0)+1); await save(shows); render(); openModal(show); };
     mCurr.onchange = async ()=>{ show.curr = Number(mCurr.value); await save(shows); render(); openModal(show); };
     mMarkDone.onclick = async ()=>{
       if((show.curr||0) >= (show.total||0)){ show.curr = 0; } else { show.curr = show.total || 0; }
       await save(shows); render(); openModal(show);
     };
     mReset.onclick = async ()=>{ show.curr = 0; await save(shows); render(); openModal(show); };
-    mDelete.onclick = async ()=>{ shows = shows.filter(s=>s.id!==show.id); await deleteFromDB(show.id); render(); mb.style.display='none'; };
+    mDelete.onclick = async ()=>{
+      shows = shows.filter(s=>s.id!==show.id);
+      await save(shows); // la limpieza en Firestore se hace dentro de save()
+      render();
+      mb.style.display='none';
+    };
     mClose.onclick = ()=>{ mb.style.display='none'; };
   }
 
-  toggleFilterBtn.onclick = ()=>{ hideDone=!hideDone; setHideDone(hideDone); updateFilterButton(); render(); };
-  clearBtn.onclick = async ()=>{ shows=[]; const snapshot = await getDocs(coll); for(const d of snapshot.docs){ await deleteFromDB(d.id); } render(); };
+  /* ===== BUSCADOR TVMAZE (tu lógica intacta) ===== */
+  let timer = null, results = [], activeIndex = -1;
 
+  async function searchTVMaze(text){
+    try{
+      const resp = await fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(text)}`);
+      if(!resp.ok) throw new Error('HTTP '+resp.status);
+      const data = await resp.json();
+      results = data.map(d => d.show);
+      activeIndex = -1;
+      renderDropdown(results, text);
+    }catch(e){
+      drop.innerHTML = `<div class="opt"><div class="t">Error: ${e.message}</div></div>`;
+      drop.style.display = 'block';
+    }
+  }
+
+  function highlight(text, query){
+    if(!query) return escapeHtml(text);
+    const q = query.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return escapeHtml(text).replace(new RegExp(q, 'ig'), m => `<mark>${m}</mark>`);
+  }
+  function escapeHtml(s){ return (s||'').replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  function renderDropdown(list, query){
+    if (!list.length){
+      drop.innerHTML = `<div class="opt"><div class="t">Sin resultados</div></div>`;
+      drop.style.display = 'block'; return;
+    }
+    drop.innerHTML = '';
+    list.slice(0,20).forEach((sh, idx)=>{
+      const year = (sh.premiered||'').slice(0,4);
+      const mini = sh.image && (sh.image.medium || sh.image.original);
+      const network = (sh.network && sh.network.name) || (sh.webChannel && sh.webChannel.name) || '';
+      const status  = sh.status || '';
+      const row = document.createElement('div');
+      row.className = 'opt';
+      row.dataset.index = idx;
+
+      let miniCol;
+      if (mini){
+        miniCol = document.createElement('img');
+        miniCol.className = 'mini';
+        miniCol.src = mini; miniCol.alt = sh.name || '';
+        miniCol.onerror = () => { miniCol.replaceWith(makePlaceholder()); };
+      } else miniCol = makePlaceholder();
+
+      const textCol = document.createElement('div');
+      textCol.innerHTML = `
+        <div class="t">${highlight(sh.name||'', query)}</div>
+        <div class="s">${year?year:''}${network?` · ${escapeHtml(network)}`:''}${status?` · ${escapeHtml(status)}`:''}</div>
+      `;
+
+      row.append(miniCol, textCol);
+      row.onclick = async () => {
+        drop.style.display = 'none';
+        try{
+          const resp = await fetch(`https://api.tvmaze.com/shows/${sh.id}/episodes`);
+          if(!resp.ok) throw new Error('HTTP '+resp.status);
+          const episodes = await resp.json();
+          const total = Array.isArray(episodes) ? episodes.length : 0;
+
+          const exists = shows.some(x => x.tvmaze_id === sh.id);
+          if (exists){ alert('Ya está en tu lista'); return; }
+
+          const poster = sh.image ? (sh.image.original || sh.image.medium) : '';
+          const item = {
+            id: crypto.randomUUID(),
+            tvmaze_id: sh.id,
+            title: sh.name || 'Sin título',
+            poster,
+            total,
+            curr: 0,
+            next: null,
+            checkedAt: 0
+          };
+          shows.unshift(item);
+          save(shows);
+          render();
+        }catch(e){
+          alert('No se pudo agregar: '+e.message);
+        }
+      };
+      drop.appendChild(row);
+    });
+    drop.style.display = 'block';
+    updateActive();
+  }
+
+  function makePlaceholder(){ const div = document.createElement('div'); div.className = 'mini placeholder'; div.textContent = '—'; return div; }
+
+  function updateActive(){
+    [...drop.children].forEach((el, i) => el.classList.toggle('active', i === activeIndex));
+  }
+
+  q.addEventListener('keydown', (e)=>{
+    if (drop.style.display !== 'block') return;
+    const max = drop.children.length - 1;
+    if (e.key === 'ArrowDown'){ e.preventDefault(); activeIndex = Math.min(max, activeIndex + 1); updateActive(); }
+    else if (e.key === 'ArrowUp'){ e.preventDefault(); activeIndex = Math.max(0, activeIndex - 1); updateActive(); }
+    else if (e.key === 'Enter'){ e.preventDefault(); const idx = activeIndex >= 0 ? activeIndex : 0; const sh = results[idx]; if (sh) drop.children[idx]?.click(); }
+    else if (e.key === 'Escape'){ drop.style.display = 'none'; }
+  });
+
+  q.addEventListener('input', e=>{
+    const t = e.target.value.trim();
+    if(!t){ drop.style.display = 'none'; drop.innerHTML=''; results=[]; activeIndex=-1; return; }
+    clearTimeout(timer); timer = setTimeout(()=>searchTVMaze(t), 300);
+  });
+  clearBtn.onclick = () => { q.value=''; drop.style.display='none'; drop.innerHTML=''; results=[]; activeIndex=-1; };
+  document.addEventListener('click', e=>{ if (!e.target.closest('.searchbox')) drop.style.display = 'none'; });
+
+  /* ===== FILTRO ===== */
   updateFilterButton();
+  toggleFilterBtn.addEventListener('click', ()=>{
+    hideDone = !hideDone;
+    setHideDone(hideDone);
+    updateFilterButton();
+    render();
+  });
+
+  /* Init UI */
   render();
 
-  // ===== BUSQUEDA TVMAZE =====
-  async function search(query){
-    if(!query) return drop.style.display='none';
-    const res = await fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(query)}`);
-    const data = await res.json();
-    results = data.map(d=>{
-      const s = d.show;
-      return {id:String(s.id), title:s.name, poster:s.image?.medium||'', total:s._embedded?.episodes?.length||0, curr:0, year: s.premiered?.split('-')[0]||'', type: s.type};
-    });
-    activeIndex=-1;
-    renderDropdown();
-  }
-
-  function renderDropdown(){
-    drop.innerHTML='';
-    if(!results.length){ drop.style.display='none'; return; }
-    results.forEach((r,i)=>{
-      const el = document.createElement('div');
-      el.className='opt'+(i===activeIndex?' active':'');
-      el.innerHTML=`<div class="mini"><img src="${r.poster}" onerror="this.style.display='none'"></div>
-                      <div><div class="t">${r.title}</div><div class="s">${r.year}</div></div>`;
-      el.onclick=async ()=>{
-        if(shows.find(s=>s.id===r.id)){ alert('Ya está en tu lista'); return; }
-        shows.unshift({...r});
-        await save(shows);
-        render();
-        drop.style.display='none';
-        q.value='';
-      };
-      drop.appendChild(el);
-    });
-    drop.style.display='block';
-  }
-
-  let debounceTimer=null;
-  q.oninput=()=>{ clearTimeout(debounceTimer); debounceTimer=setTimeout(()=>search(q.value),300); };
-  q.onkeydown=(e)=>{
-    if(!results.length) return;
-    if(e.key==='ArrowDown'){ activeIndex=(activeIndex+1)%results.length; renderDropdown(); e.preventDefault(); }
-    if(e.key==='ArrowUp'){ activeIndex=(activeIndex-1+results.length)%results.length; renderDropdown(); e.preventDefault(); }
-    if(e.key==='Enter' && activeIndex>=0){ results[activeIndex].onclick?.(); e.preventDefault(); }
-  };
-
+  /* ===== REFRESCO DE DISPONIBILIDAD (si usas tus helpers originales, puedes reinsertarlos) ===== */
+  // refreshAllNext();
+  // setInterval(refreshAllNext, 6 * 60 * 60 * 1000);
+  // document.addEventListener('visibilitychange', ()=>{ if (!document.hidden) refreshAllNext(); });
 </script>
 </body>
 </html>
