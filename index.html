@@ -1,401 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SERIES — Watchlist</title>
-
-<style>
-  :root{
-    --bg:#0b0f19; --panel:#0f172a; --card:#111827; --text:#e5e7eb; --muted:#9ca3af;
-    --accent:#e50914; --accent-2:#b81d24; --ok:#22c55e; --warn:#f59e0b; --line:#1f2937;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0; background:radial-gradient(1200px 400px at 50% -80px,rgba(229,9,20,.18),transparent 60%), var(--bg);
-    color:var(--text);
-    font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  }
-
-  header{
-    position:sticky; top:0; z-index:10;
-    background:linear-gradient(180deg,rgba(11,15,25,.96),rgba(11,15,25,.75));
-    border-bottom:1px solid var(--line);
-    backdrop-filter:blur(10px);
-  }
-  .wrap{max-width:1200px; margin:0 auto; padding:20px 16px}
-  .hero{ display:flex; flex-direction:column; gap:14px; align-items:center; justify-content:center; padding:18px 0 8px 0; }
-  .badges{ display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap; transform:translateZ(0); }
-  .badge{
-    font-family:'Cinzel', serif; font-weight:900; letter-spacing:.2rem;
-    font-size: clamp(1.6rem, 3vw, 2.2rem); line-height:1;
-    color:#fff; padding:8px 18px; border-radius:10px; border:1px solid #4c0b0f;
-    background:linear-gradient(90deg,var(--accent),var(--accent-2));
-    text-shadow:0 1px 2px rgba(0,0,0,.6);
-    box-shadow: 0 6px 20px rgba(229,9,20,.18), inset 0 0 10px rgba(255,255,255,.06);
-    transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
-  }
-  .badge.alt{ background:linear-gradient(90deg,var(--accent-2),var(--accent)); }
-  .badge:hover{ transform:translateY(-2px) scale(1.03); filter:brightness(1.06); box-shadow:0 16px 36px rgba(229,9,20,.25), inset 0 0 12px rgba(255,255,255,.08); }
-
-  .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center; margin-top:10px; }
-  input,button{ padding:12px 14px; border-radius:10px; border:1px solid var(--line); background:#0c1222; color:var(--text); }
-  button{ cursor:pointer; transition:.2s ease }
-  .btn-ghost{ background:transparent }
-
-  /* Buscador grande */
-  .searchbox{
-    position:relative; flex:1;
-    min-width:400px;
-    max-width:900px;
-  }
-  .searchbox input{
-    width:100%;
-    height:60px;
-    font-size:1.2rem;
-    padding:14px 18px;
-    border-radius:12px;
-  }
-
-  /* Dropdown con mini-póster, highlight y teclado */
-  .dropdown{
-    position:absolute; top:110%; left:0; right:0; background:#0b1220; border:1px solid var(--line); border-radius:12px;
-    box-shadow:0 14px 40px rgba(0,0,0,.45); max-height:480px; overflow:auto; display:none; padding:6px;
-  }
-  .opt{
-    display:grid; grid-template-columns:68px 1fr; gap:12px;
-    padding:10px; border-bottom:1px solid #111827; align-items:center; cursor:pointer; border-radius:8px;
-  }
-  .opt:hover{ background:#0f172a }
-  .opt.active{ outline:2px solid rgba(229,9,20,.5); background:#0f172a; }
-  .mini{
-    width:68px; height:102px; border-radius:8px; border:1px solid var(--line); background:#111827; object-fit:cover; display:block;
-  }
-  .mini.placeholder{
-    display:flex; align-items:center; justify-content:center; font-size:.75rem; color:#666; background:linear-gradient(180deg,#0f172a,#0b1220);
-  }
-  .opt .t{
-    font-weight:700; font-size:1.02rem; line-height:1.25; white-space:normal; word-break:break-word;
-  }
-  .opt .s{ color:var(--muted); font-size:.95rem; margin-top:2px; }
-  .opt mark{
-    background:rgba(229,9,20,.28);
-    color:#fff;
-    padding:0 .1em;
-    border-radius:3px;
-  }
-
-  /* Grid */
-  .section{ max-width:1200px; margin:18px auto; padding:0 16px }
-  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:16px }
-  .card{
-    position:relative; background:var(--card); border:1px solid var(--line);
-    border-radius:12px; overflow:hidden; cursor:pointer;
-    transform:translateZ(0); transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
-  }
-  .card:hover{ transform:translateY(-3px) scale(1.03); box-shadow:0 16px 36px rgba(0,0,0,.35); filter:brightness(1.03); }
-  .poster{ width:100%; aspect-ratio:2/3; object-fit:cover; background:#101623; display:block }
-  .title{
-    position:absolute; left:8px; right:8px; bottom:8px;
-    background:linear-gradient(180deg,transparent,rgba(0,0,0,.88));
-    padding:40px 10px 10px; border-radius:10px; color:#fff; font-weight:800;
-    text-shadow:0 1px 2px rgba(0,0,0,.8); font-family:'Cinzel', serif; letter-spacing:.03rem; font-size:1rem; line-height:1.25;
-    display:-webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow:hidden;
-  }
-  .progress{ position:absolute; top:8px; right:8px; background:rgba(0,0,0,.65); border:1px solid var(--line); padding:3px 8px; border-radius:999px; font-size:.85rem; color:#fff }
-  .bar{ height:4px; background:#1f2937 }
-  .bar-in{ height:100%; background:linear-gradient(90deg,#22c55e,#f59e0b); width:0% }
-  .empty{ border:1px dashed var(--line); border-radius:12px; padding:24px; color:var(--muted); text-align:center }
-
-  /* Badge de siguiente episodio */
-  .notify{
-    display:inline-block; margin-left:8px; vertical-align:middle;
-    padding:2px 8px; border-radius:999px; font-size:.78rem; font-weight:700; letter-spacing:.02rem;
-    border:1px solid #14532d; color:#bbf7d0; background:rgba(34,197,94,.22);
-  }
-  .notify.upcoming{
-    border-color:#7c2d12; color:#fed7aa; background:rgba(245,158,11,.22);
-  }
-
-  /* Estado VIENDO/TERMINADA */
-  .state{
-    position:absolute; top:8px; left:8px;
-    padding:3px 8px; border-radius:999px; font-size:.78rem; font-weight:800; letter-spacing:.02rem;
-    border:1px solid var(--line);
-    background:rgba(0,0,0,.65); color:#fff;
-  }
-  .state.done{
-    border-color:#14532d; background:rgba(34,197,94,.18); color:#bbf7d0;
-  }
-
-  /* Nuevo: Display de Usuario */
-  .userIdDisplay{
-    font-size:.7rem; color:var(--muted); text-align:center; margin-top:-10px; margin-bottom:10px;
-  }
-
-  /* ===== Nuevo diseño de modal compacto (modificado) ===== */
-  .modal-back {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.6);
-    display: none; align-items: center; justify-content: center;
-    z-index: 100;
-    backdrop-filter: blur(4px);
-  }
-  .modal {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    width: 360px;
-    padding: 20px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.45);
-    display: flex; flex-direction: column; gap: 14px;
-    animation: popIn .25s ease;
-  }
-  @keyframes popIn {
-    from {transform: scale(.85); opacity: 0;}
-    to {transform: scale(1); opacity: 1;}
-  }
-  .modal .top {
-    display: flex; align-items: flex-start; gap: 14px;
-  }
-  .modal img {
-    width: 100px; height: 150px;
-    object-fit: cover; border-radius: 10px; border:1px solid var(--line);
-  }
-  .modal .meta h3 {
-    margin: 0; font-size: 1.05rem;
-  }
-  .modal .meta .muted {
-    color: var(--muted); font-size: .9rem; margin-bottom: 6px;
-  }
-  .modal .controls {
-    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-  }
-  .modal input.num {
-    width: 50px; text-align: center;
-  }
-  .modal .bottom {
-    display: flex; flex-direction: column; gap: 10px;
-  }
-  .modal button { border-radius: 8px; padding:8px 12px; }
-
-</style>
-</head>
-<body>
-
-<header>
-  <div class="wrap">
-    <div class="hero">
-      <div class="badges">
-        <div class="badge">SERIES</div>
-        <div class="badge alt">WATCHLIST</div>
-      </div>
-      <!-- NUEVO: Display de ID de usuario -->
-      <div id="userIdDisplay" class="userIdDisplay">Cargando datos del usuario...</div>
-      <div class="row">
-        <div class="searchbox">
-          <input id="q" type="text" placeholder="Buscar series… (ej. Dark, Friends, The Office)" autocomplete="off"/>
-          <div id="drop" class="dropdown"></div>
-        </div>
-        <button id="clear" class="btn-ghost">Limpiar</button>
-        <!-- NUEVO: Filtro -->
-        <button id="toggleFilter" class="btn-ghost">Ocultar terminadas</button>
-      </div>
-    </div>
-  </div>
-</header>
-
-<main class="section">
-  <div id="grid" class="grid"></div>
-  <div id="empty" class="empty" style="display:none;">No tienes series aún. Busca arriba y agrégalas 🍿</div>
-</main>
-
-<!-- Modal (modificado, mismo IDs que el original) -->
-<div id="mb" class="modal-back">
-  <div class="modal">
-    <div class="top">
-      <img id="mPoster" src="" alt="">
-      <div class="meta">
-        <h3 id="mTitle"></h3>
-        <div class="muted" id="mInfo"></div>
-        <div class="controls">
-          <button id="mMinus">−1</button>
-          <input id="mCurr" class="num" type="number" min="0" />
-          <button id="mPlus">+1</button>
-          <span class="muted" id="mTotal"></span>
-        </div>
-        <div class="bar" style="margin-top:6px;"><div id="mBar" class="bar-in"></div></div>
-      </div>
-    </div>
-    <div class="bottom">
-      <div class="controls">
-        <button id="mMarkDone" class="btn-ghost" style="border:1px solid var(--line)">Marcar como terminada</button>
-        <button id="mReset" class="btn-ghost">Reiniciar (episodio 0)</button>
-      </div>
-      <div class="controls">
-        <button id="mDelete" class="btn-ghost" style="color:#fca5a5;border-color:#7f1d1d">Eliminar</button>
-        <button id="mClose" class="btn-ghost">Cerrar</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script type="module">
-  // --- Importaciones de Firebase ---
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-  import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-  import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-  /* ===== STORAGE & FIREBASE CONFIGURATION ===== */
-
-  // Variables globales proporcionadas por el entorno (USO OBLIGATORIO)
-  const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-  const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-  const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-  // Servicios de Firebase
-  let app, db, auth;
-  let userId = null;
-  let isAuthReady = false;
-  let firestoreListener = null;
-
-  // Clave para el filtro local (se mantiene en localStorage)
-  const KEY_FILTER = 'series_watchlist_tvmaze_v3_hideDone';
-  const getHideDone = () => JSON.parse(localStorage.getItem(KEY_FILTER) || 'false');
-  const setHideDone = (v) => localStorage.setItem(KEY_FILTER, JSON.stringify(!!v));
-
-  /* ===== STATE (se carga desde Firestore) ===== */
-  let shows = []; // {id, tvmaze_id, title, poster, total, curr, next?, checkedAt?}
-  let results = []; // resultados de búsqueda
-  let activeIndex = -1;
-  let hideDone = getHideDone();
-
-  /* ===== DOM ===== */
-  const q = document.getElementById('q');
-  const drop = document.getElementById('drop');
-  const clearBtn = document.getElementById('clear');
-  const grid = document.getElementById('grid');
-  const empty = document.getElementById('empty');
-  const toggleFilterBtn = document.getElementById('toggleFilter');
-  const userIdDisplay = document.getElementById('userIdDisplay'); // Nuevo elemento
-
-  // Modal
-  const mb = document.getElementById('mb');
-  const mPoster = document.getElementById('mPoster');
-  const mTitle  = document.getElementById('mTitle');
-  const mInfo   = document.getElementById('mInfo');
-  const mCurr   = document.getElementById('mCurr');
-  const mTotal  = document.getElementById('mTotal');
-  const mBar    = document.getElementById('mBar');
-  const mMinus  = document.getElementById('mMinus');
-  const mPlus   = document.getElementById('mPlus');
-  const mMarkDone = document.getElementById('mMarkDone');
-  const mReset  = document.getElementById('mReset');
-  const mDelete = document.getElementById('mDelete');
-  const mClose  = document.getElementById('mClose');
-
-
-  // --- FUNCIONES DE FIREBASE ---
-
-  function getCollectionRef() {
-    if (!db || !userId) return null;
-    // Ruta de colección privada: /artifacts/{appId}/users/{userId}/watchlist_series
-    return collection(db, 'artifacts', appId, 'users', userId, 'watchlist_series');
-  }
-
-  function startFirestoreListener() {
-    if (firestoreListener) firestoreListener(); // Desconectar listener previo
-    const colRef = getCollectionRef();
-    if (!colRef) return;
-
-    // onSnapshot para actualizaciones de datos en tiempo real
-    firestoreListener = onSnapshot(colRef, (snapshot) => {
-      shows = []; // Resetear array local
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        shows.push({
-          id: doc.id,
-          ...data,
-          // Asegurar la conversión de tipos (necesario si se guardan como string por seguridad)
-          curr: Number(data.curr) || 0,
-          total: Number(data.total) || 0,
-          checkedAt: Number(data.checkedAt) || 0,
-          // `next` ya es un objeto si existe
-        });
-      });
-      console.log(`[Firestore] Se cargaron ${shows.length} series.`);
-      render();
-      // Forzar la actualización del siguiente episodio después de cargar los datos
-      refreshAllNext();
-    }, (error) => {
-      console.error("[Firestore] Error al escuchar cambios:", error);
-    });
-  }
-
-  async function saveSeriesItem(item) {
-    if (!db || !userId || !isAuthReady) {
-      console.error("[Firestore] No se pudo guardar: Autenticación no lista o ID de usuario no disponible.");
-      return;
-    }
-    const colRef = getCollectionRef();
-    if (!colRef) return;
-
-    // Usar item.id como el ID del documento
-    const docRef = doc(colRef, item.id);
-
-    // Preparar datos para guardar (quitar el ID ya que es el ID del documento)
-    const { id, ...dataToSave } = item;
-
-    try {
-      // Usar setDoc para crear o actualizar
-      await setDoc(docRef, dataToSave, { merge: true });
-    } catch(e) {
-      console.error("[Firestore] Error al guardar la serie:", e);
-    }
-  }
-
-  async function deleteSeriesItem(id) {
-    if (!db || !userId || !isAuthReady) {
-      console.error("[Firestore] No se pudo eliminar: Autenticación no lista o ID de usuario no disponible.");
-      return;
-    }
-    const colRef = getCollectionRef();
-    if (!colRef) return;
-
-    try {
-      await deleteDoc(doc(colRef, id));
-    } catch(e) {
-      console.error("[Firestore] Error al eliminar la serie:", e);
-    }
-  }
-
-  // --- FIN FUNCIONES DE FIREBASE ---
-
-
-  function updateFilterButton(){
-    toggleFilterBtn.textContent = hideDone ? 'Mostrar terminadas' : 'Ocultar terminadas';
-  }
-
-  /* ===== RENDER GRID ===== */
-  function render() {
-    grid.innerHTML = '';
-    if (shows.length === 0) { empty.style.display = 'block'; return; }
-    empty.style.display = 'none';
-
-    // 1) Filtrar (si está activo esconder terminadas)
-    const filtered = hideDone
-      ? shows.filter(s => !((s.total || 0) > 0 && (s.curr || 0) >= s.total))
-      : [...shows];
-
-    // 2) Ordenar: Viendo primero, Terminada al final (estable)
-    const sorted = [...filtered].sort((a, b) => {
-      const aDone = (a.total || 0) > 0 && (a.curr || 0) >= a.total;
-      const bDone = (b.total || 0) > 0 && (b.curr || 0) >= b.total;
-      if (aDone === bDone) return 0;
-      return aDone ? 1 : -1;
-    });
-
-    for (const s of sorted) {
+  for (const s of sorted) {
       const card = document.createElement('div');
       card.className = 'card';
 
@@ -409,334 +12,95 @@
       title.className = 'title';
       title.textContent = s.title;
 
-      // Badge de siguiente episodio (si aplica)
-      const badge = buildNotifyBadge(s);
-      if (badge) title.appendChild(badge);
+      const badge = s.next ? document.createElement('span') : null;
+      if (badge){
+        badge.className = 'notify';
+        badge.textContent = s.next;
+        title.appendChild(badge);
+      }
 
-      // Estado Viendo/Terminada
-      const isDone = (s.total || 0) > 0 && (s.curr || 0) >= s.total;
-      const state = document.createElement('div');
-      state.className = 'state' + (isDone ? ' done' : '');
-      state.textContent = isDone ? 'TERMINADA' : 'VIENDO';
+      card.appendChild(imgEl);
+      card.appendChild(title);
 
-      const prog = document.createElement('div');
-      prog.className = 'progress';
-      prog.textContent = `E ${s.curr}/${s.total || 0}`;
+      card.onclick = () => openModal(s);
 
-      const bar = document.createElement('div');
-      bar.className = 'bar';
-      const barIn = document.createElement('div');
-      barIn.className = 'bar-in';
-      const pct = s.total ? Math.min(100, Math.round(100 * (s.curr||0) / s.total)) : 0;
-      barIn.style.width = pct + '%';
-      bar.appendChild(barIn);
-
-      card.append(imgEl, title, prog, bar, state);
-      card.onclick = () => openModal(s.id);
       grid.appendChild(card);
     }
   }
 
-  /* ===== BADGE HELPERS ===== */
-  function buildNotifyBadge(s){
-    if (!s.next) return null;
-    const span = document.createElement('span');
-    if (s.next.available) {
-      span.className = 'notify';
-      span.textContent = `E${s.next.num} DISPONIBLE`;
-    } else {
-      span.className = 'notify upcoming';
-      const label = s.next.airDate ? new Date(s.next.airDate).toLocaleDateString(undefined, {month:'short', day:'2-digit'}) : 'pronto';
-      span.textContent = `E${s.next.num} · ${label}`;
-    }
-    return span;
+  function openModal(show){
+    mPoster.src = show.poster || '';
+    mTitle.textContent = show.title;
+    mInfo.textContent = `${show.year || ''} • ${show.type || ''}`;
+    mCurr.value = show.curr || 0;
+    mTotal.textContent = `de ${show.total || 0}`;
+    const percent = show.total ? (show.curr || 0)/show.total*100 : 0;
+    mBar.style.width = percent+'%';
+
+    mMarkDone.textContent = (show.curr >= show.total) ? 'Desmarcar terminada' : 'Marcar como terminada';
+
+    mb.style.display='flex';
+
+    mMinus.onclick = async ()=>{ show.curr = Math.max(0,(show.curr||0)-1); await save(shows); render(); openModal(show); };
+    mPlus.onclick = async ()=>{ show.curr = Math.min(show.total||(show.curr||0)+1,(show.curr||0)+1); await save(shows); render(); openModal(show); };
+    mCurr.onchange = async ()=>{ show.curr = Number(mCurr.value); await save(shows); render(); openModal(show); };
+    mMarkDone.onclick = async ()=>{
+      if((show.curr||0) >= (show.total||0)){ show.curr = 0; } else { show.curr = show.total || 0; }
+      await save(shows); render(); openModal(show);
+    };
+    mReset.onclick = async ()=>{ show.curr = 0; await save(shows); render(); openModal(show); };
+    mDelete.onclick = async ()=>{ shows = shows.filter(s=>s.id!==show.id); await deleteFromDB(show.id); render(); mb.style.display='none'; };
+    mClose.onclick = ()=>{ mb.style.display='none'; };
   }
 
-  function shouldCheck(s){
-    const SIX_HOURS = 6 * 60 * 60 * 1000;
-    return !s.checkedAt || (Date.now() - s.checkedAt) > SIX_HOURS;
-  }
+  toggleFilterBtn.onclick = ()=>{ hideDone=!hideDone; setHideDone(hideDone); updateFilterButton(); render(); };
+  clearBtn.onclick = async ()=>{ shows=[]; const snapshot = await getDocs(coll); for(const d of snapshot.docs){ await deleteFromDB(d.id); } render(); };
 
-  async function lazyUpdateNext(s){
-    if (!s || !s.tvmaze_id || !isAuthReady) return; // Control de autenticación
-    if (!shouldCheck(s)) return;
-    try{
-      const resp = await fetch(`https://api.tvmaze.com/shows/${s.tvmaze_id}/episodes`);
-      if(!resp.ok) throw new Error('HTTP '+resp.status);
-      const eps = await resp.json();
-
-      const nextIdx = s.curr; // siguiente a ver (0-based)
-      let next = null;
-
-      if (Array.isArray(eps) && eps.length > nextIdx){
-        const nx = eps[nextIdx];
-        const airStamp = nx.airstamp ? Date.parse(nx.airstamp) : null; // UTC
-        const airDate = nx.airdate || null;
-        const available = airStamp ? (Date.now() >= airStamp) : !!airDate;
-        next = {
-          num: s.curr + 1,
-          title: nx.name || '',
-          airStamp, airDate, available
-        };
-      } else {
-        next = null;
-      }
-
-      s.total = Array.isArray(eps) ? eps.length : (s.total || 0); // actualiza total si cambió
-      s.next = next;
-      s.checkedAt = Date.now();
-      await saveSeriesItem(s); // Guardar el objeto actualizado en Firestore
-      // render() es llamado por onSnapshot
-    }catch(e){
-      console.error(`Error al actualizar next de ${s.title}: ${e.message}`);
-      s.checkedAt = Date.now();
-      await saveSeriesItem(s); // Guardar la marca de tiempo a pesar del error
-      // render() es llamado por onSnapshot
-    }
-  }
-
-  async function refreshAllNext(force=false){
-    if (!isAuthReady) return; // Control de autenticación
-    for (const s of shows){
-      if (force) s.checkedAt = 0;
-      // Usar await para evitar sobrecargar el rate limit de TVMaze
-      await lazyUpdateNext(s);
-    }
-  }
-
-  /* ===== MODAL ===== */
-  let modalId = null;
-  function openModal(id){
-    modalId = id;
-    const s = shows.find(x => x.id === id);
-    if (!s) return;
-    mPoster.src = s.poster || '';
-    mTitle.textContent = s.title;
-    mInfo.textContent = 'Progreso de episodios';
-    mCurr.value = s.curr || 0;
-    mCurr.min = 0;
-    mCurr.max = s.total || 0;
-    mTotal.textContent = `/ de ${s.total || 0} episodios`;
-    mBar.style.width = (s.total ? (100 * (s.curr||0) / s.total) : 0) + '%';
-    mb.style.display = 'flex';
-  }
-  function closeModal(){ mb.style.display = 'none'; modalId = null; }
-  function updateCurr(v){
-    const s = shows.find(x => x.id === modalId);
-    if (!s || !isAuthReady) return;
-
-    s.curr = Math.max(0, Math.min(s.total || 0, v|0));
-    // Forzar recálculo del siguiente episodio
-    s.checkedAt = 0;
-    s.next = null;
-    saveSeriesItem(s); // NEW: Usar Firestore update
-    openModal(s.id);
-    // render() es llamado por onSnapshot
-  }
-  mMinus.onclick = () => { if(modalId){ const s = shows.find(x=>x.id===modalId); updateCurr((s.curr||0)-1); } };
-  mPlus.onclick  = () => { if(modalId){ const s = shows.find(x=>x.id===modalId); updateCurr((s.curr||0)+1); } };
-  mCurr.addEventListener('change', e => updateCurr(parseInt(e.target.value || '0',10)));
-  mMarkDone.onclick = () => { if(modalId){ const s=shows.find(x=>x.id===modalId); updateCurr(s.total||0); } };
-  mReset.onclick = () => updateCurr(0);
-  mDelete.onclick = () => {
-    if(!modalId) return;
-    // Eliminado: window.confirm() -> se asume que el usuario confirma al hacer click en el botón dentro del modal
-    deleteSeriesItem(modalId); // NEW: Usar Firestore delete
-    closeModal();
-    // render() es llamado por onSnapshot
-  };
-  mClose.onclick = closeModal;
-  mb.addEventListener('click', e => { if (e.target === mb) closeModal(); });
-
-  /* ===== BUSCADOR TVMAZE ===== */
-  let timer = null;
-
-  async function searchTVMaze(text){
-    try{
-      const resp = await fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(text)}`);
-      if(!resp.ok) throw new Error('HTTP '+resp.status);
-      const data = await resp.json();
-      results = data.map(d => d.show);
-      activeIndex = -1;
-      renderDropdown(results, text);
-    }catch(e){
-      drop.innerHTML = `<div class="opt"><div class="t">Error: ${e.message}</div></div>`;
-      drop.style.display = 'block';
-    }
-  }
-
-  function highlight(text, query){
-    if(!query) return escapeHtml(text);
-    const q = query.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return escapeHtml(text).replace(new RegExp(q, 'ig'), m => `<mark>${m}</mark>`);
-  }
-  function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-  function renderDropdown(list, query){
-    if (!list.length){
-      drop.innerHTML = `<div class="opt"><div class="t">Sin resultados</div></div>`;
-      drop.style.display = 'block'; return;
-    }
-    drop.innerHTML = '';
-    list.slice(0,20).forEach((sh, idx)=>{
-      const year = (sh.premiered||'').slice(0,4);
-      const mini = sh.image && (sh.image.medium || sh.image.original);
-      const network = (sh.network && sh.network.name) || (sh.webChannel && sh.webChannel.name) || '';
-      const status  = sh.status || '';
-      const row = document.createElement('div');
-      row.className = 'opt';
-      row.dataset.index = idx;
-
-      let miniCol;
-      if (mini){
-        miniCol = document.createElement('img');
-        miniCol.className = 'mini';
-        miniCol.src = mini; miniCol.alt = sh.name || '';
-        miniCol.onerror = () => { miniCol.replaceWith(makePlaceholder()); };
-      } else miniCol = makePlaceholder();
-
-      const textCol = document.createElement('div');
-      textCol.innerHTML = `
-        <div class="t">${highlight(sh.name||'', query)}</div>
-        <div class="s">${year?year:''}${network?` · ${escapeHtml(network)}`:''}${status?` · ${escapeHtml(status)}`:''}</div>
-      `;
-
-      row.append(miniCol, textCol);
-      row.onclick = () => selectShow(sh);
-      drop.appendChild(row);
-    });
-    drop.style.display = 'block';
-    updateActive();
-  }
-
-  function makePlaceholder(){ const div = document.createElement('div'); div.className = 'mini placeholder'; div.textContent = '—'; return div; }
-
-  async function selectShow(show){
-    drop.style.display = 'none';
-    if (!isAuthReady) { console.error("No se pudo agregar: Autenticación no lista."); return; }
-
-    try{
-      const resp = await fetch(`https://api.tvmaze.com/shows/${show.id}/episodes`);
-      if(!resp.ok) throw new Error('HTTP '+resp.status);
-      const episodes = await resp.json();
-      const total = Array.isArray(episodes) ? episodes.length : 0;
-
-      const exists = shows.some(x => x.tvmaze_id === show.id);
-      if (exists){ console.log('Ya está en tu lista'); return; } // Sustituido alert() por console.log
-
-      const poster = show.image ? (show.image.original || show.image.medium) : '';
-      const item = {
-        id: crypto.randomUUID(),
-        tvmaze_id: show.id,
-        title: show.name || 'Sin título',
-        poster,
-        total,
-        curr: 0,
-        next: null,
-        checkedAt: 0
-      };
-      // shows.unshift(item); // Ya no se actualiza el array local directamente
-      await saveSeriesItem(item); // NEW: Usar Firestore add/setDoc
-      // render() es llamado por onSnapshot
-    }catch(e){
-      console.error('No se pudo agregar: '+e.message); // Sustituido alert() por console.error
-    }
-  }
-
-  function updateActive(){
-    [...drop.children].forEach((el, i) => el.classList.toggle('active', i === activeIndex));
-    const activeEl = drop.children[activeIndex];
-    if (activeEl){
-      const boxTop = drop.scrollTop, boxBottom = boxTop + drop.clientHeight;
-      const elTop = activeEl.offsetTop, elBottom = elTop + el.offsetHeight;
-      // Scroll to active element if out of view (original logic kept)
-      if (elTop < boxTop) drop.scrollTop = elTop;
-      else if (elBottom > boxBottom) drop.scrollTop = elBottom - drop.clientHeight;
-    }
-  }
-
-  q.addEventListener('keydown', (e)=>{
-    if (drop.style.display !== 'block') return;
-    const max = drop.children.length - 1;
-    if (e.key === 'ArrowDown'){ e.preventDefault(); activeIndex = Math.min(max, activeIndex + 1); updateActive(); }
-    else if (e.key === 'ArrowUp'){ e.preventDefault(); activeIndex = Math.max(0, activeIndex - 1); updateActive(); }
-    else if (e.key === 'Enter'){ e.preventDefault(); const idx = activeIndex >= 0 ? activeIndex : 0; const sh = results[idx]; if (sh) selectShow(sh); }
-    else if (e.key === 'Escape'){ drop.style.display = 'none'; }
-  });
-
-  q.addEventListener('input', e=>{
-    const t = e.target.value.trim();
-    if(!t){ drop.style.display = 'none'; drop.innerHTML=''; results=[]; activeIndex=-1; return; }
-    clearTimeout(timer); timer = setTimeout(()=>searchTVMaze(t), 300);
-  });
-  clearBtn.onclick = () => { q.value=''; drop.style.display='none'; drop.innerHTML=''; results=[]; activeIndex=-1; };
-  document.addEventListener('click', e=>{ if (!e.target.closest('.searchbox')) drop.style.display = 'none'; });
-
-  /* ===== FILTRO ===== */
   updateFilterButton();
-  toggleFilterBtn.addEventListener('click', ()=>{
-    hideDone = !hideDone;
-    setHideDone(hideDone);
-    updateFilterButton();
-    render();
-  });
+  render();
 
-  // --- FUNCIÓN DE INICIO PRINCIPAL ---
-  function initApp(){
-    // Iniciar el listener de Firestore para cargar los datos en tiempo real
-    startFirestoreListener();
-
-    // Iniciar el refresco periódico de disponibilidad (si la auth está lista)
-    if (isAuthReady) {
-      setInterval(refreshAllNext, 6 * 60 * 60 * 1000);     // cada 6 horas
-      document.addEventListener('visibilitychange', ()=>{  // al volver a la pestaña
-        if (!document.hidden) refreshAllNext();
-      });
-    }
-
-    render(); // Render inicial (mostrará el mensaje "No tienes series aún" hasta que Firestore cargue)
-  }
-
-  // --- INICIALIZACIÓN DE FIREBASE Y AUTENTICACIÓN ---
-  if (Object.keys(firebaseConfig).length > 0) {
-    app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
-    auth = getAuth(app);
-
-    userIdDisplay.textContent = 'Conectando a Firebase...';
-
-    // 1. Escuchar el cambio de estado de Autenticación
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        userId = user.uid;
-        isAuthReady = true;
-        userIdDisplay.textContent = `ID de Usuario: ${userId}`;
-        console.log("Firebase Auth Listo. User ID:", userId);
-        initApp();
-      } else {
-        // Si el estado inicial es null, intentamos el sign-in
-        if (!isAuthReady) {
-            try {
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch(error) {
-                console.error("Firebase Sign-in fallido:", error);
-                isAuthReady = true; // Marcar como listo para evitar bucles
-                userIdDisplay.textContent = 'Error de autenticación. Datos no disponibles.';
-            }
-        }
-      }
+  // ===== BUSQUEDA TVMAZE =====
+  async function search(query){
+    if(!query) return drop.style.display='none';
+    const res = await fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(query)}`);
+    const data = await res.json();
+    results = data.map(d=>{
+      const s = d.show;
+      return {id:String(s.id), title:s.name, poster:s.image?.medium||'', total:s._embedded?.episodes?.length||0, curr:0, year: s.premiered?.split('-')[0]||'', type: s.type};
     });
-  } else {
-    // Caso de configuración faltante, no debería pasar en el entorno de Canvas
-    console.error("Falta la configuración de Firebase.");
-    isAuthReady = true;
-    userIdDisplay.textContent = 'Error: Falta Configuración de Firebase.';
-    initApp();
+    activeIndex=-1;
+    renderDropdown();
   }
+
+  function renderDropdown(){
+    drop.innerHTML='';
+    if(!results.length){ drop.style.display='none'; return; }
+    results.forEach((r,i)=>{
+      const el = document.createElement('div');
+      el.className='opt'+(i===activeIndex?' active':'');
+      el.innerHTML=`<div class="mini"><img src="${r.poster}" onerror="this.style.display='none'"></div>
+                      <div><div class="t">${r.title}</div><div class="s">${r.year}</div></div>`;
+      el.onclick=async ()=>{
+        if(shows.find(s=>s.id===r.id)){ alert('Ya está en tu lista'); return; }
+        shows.unshift({...r});
+        await save(shows);
+        render();
+        drop.style.display='none';
+        q.value='';
+      };
+      drop.appendChild(el);
+    });
+    drop.style.display='block';
+  }
+
+  let debounceTimer=null;
+  q.oninput=()=>{ clearTimeout(debounceTimer); debounceTimer=setTimeout(()=>search(q.value),300); };
+  q.onkeydown=(e)=>{
+    if(!results.length) return;
+    if(e.key==='ArrowDown'){ activeIndex=(activeIndex+1)%results.length; renderDropdown(); e.preventDefault(); }
+    if(e.key==='ArrowUp'){ activeIndex=(activeIndex-1+results.length)%results.length; renderDropdown(); e.preventDefault(); }
+    if(e.key==='Enter' && activeIndex>=0){ results[activeIndex].onclick?.(); e.preventDefault(); }
+  };
 
 </script>
 </body>
