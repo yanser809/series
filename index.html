@@ -32,7 +32,7 @@
     color:#fff; padding:8px 18px; border-radius:10px; border:1px solid #4c0b0f;
     background:linear-gradient(90deg,var(--accent),var(--accent-2));
     text-shadow:0 1px 2px rgba(0,0,0,.6);
-    box-shadow: 0 6px 20px rgba(229,9,20,.18), inset 0 0 10px rgba(255,255,255,.06);
+    box-shadow: 0 6px 20px rgba(229,9,20,.18), inset 0 0 12px rgba(255,255,255,.08);
     transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
   }
   .badge.alt{ background:linear-gradient(90deg,var(--accent-2),var(--accent)); }
@@ -57,7 +57,7 @@
     border-radius:12px;
   }
 
-  /* Dropdown con mini-póster, highlight y teclado */
+  /* Dropdown */
   .dropdown{
     position:absolute; top:110%; left:0; right:0; background:#0b1220; border:1px solid var(--line); border-radius:12px;
     box-shadow:0 14px 40px rgba(0,0,0,.45); max-height:480px; overflow:auto; display:none; padding:6px;
@@ -74,16 +74,9 @@
   .mini.placeholder{
     display:flex; align-items:center; justify-content:center; font-size:.75rem; color:#666; background:linear-gradient(180deg,#0f172a,#0b1220);
   }
-  .opt .t{
-    font-weight:700; font-size:1.02rem; line-height:1.25; white-space:normal; word-break:break-word;
-  }
+  .opt .t{ font-weight:700; font-size:1.02rem; line-height:1.25; }
   .opt .s{ color:var(--muted); font-size:.95rem; margin-top:2px; }
-  .opt mark{
-    background:rgba(229,9,20,.28);
-    color:#fff;
-    padding:0 .1em;
-    border-radius:3px;
-  }
+  .opt mark{ background:rgba(229,9,20,.28); color:#fff; padding:0 .1em; border-radius:3px; }
 
   /* Grid */
   .section{ max-width:1200px; margin:18px auto; padding:0 16px }
@@ -128,16 +121,48 @@
     border-color:#14532d; background:rgba(34,197,94,.18); color:#bbf7d0;
   }
 
-  /* ===== Nuevo diseño de modal compacto ===== */
-  .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
-  .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; width: 360px; padding: 20px; box-shadow: 0 8px 40px rgba(0,0,0,0.45); display: flex; flex-direction: column; gap: 14px; animation: popIn .25s ease; }
+  /* Modal */
+  .modal-back {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    display: none; align-items: center; justify-content: center;
+    z-index: 100; backdrop-filter: blur(4px);
+  }
+  .modal {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+    width: 360px; padding: 20px; box-shadow: 0 8px 40px rgba(0,0,0,0.45);
+    display: flex; flex-direction: column; gap: 14px; animation: popIn .25s ease;
+  }
   @keyframes popIn { from {transform: scale(.85); opacity: 0;} to {transform: scale(1); opacity: 1;} }
   .modal .top { display: flex; align-items: flex-start; gap: 14px; }
   .modal img { width: 100px; height: 150px; object-fit: cover; border-radius: 10px; border:1px solid var(--line); }
   .modal .meta h3 { margin: 0; font-size: 1.05rem; }
   .modal .meta .muted { color: var(--muted); font-size: .9rem; margin-bottom: 6px; }
-  .modal .controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .modal input.num { width: 50px; text-align: center; }
+
+  /* ====== CONTROLES DEL MODAL (ajustes para que se vea el número) ====== */
+  .modal .controls {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .modal input.num {
+    width: 72px;                 /* más ancho para que quepa el valor */
+    text-align: center;
+    font-size: 1rem;             /* más grande y legible */
+    line-height: 1.2;            /* evita recorte vertical */
+    padding: 8px 10px;           /* no queda “aplastado” */
+    z-index: 1;                  /* por encima de botones */
+    position: relative;
+    appearance: textfield;       /* oculta estilo nativo en la mayoría */
+    -moz-appearance: textfield;  /* Firefox */
+    background:#0c1222;
+    color: var(--text);
+    border:1px solid var(--line);
+    border-radius: 8px;
+  }
+  /* Quitar spinners WebKit */
+  .modal input.num::-webkit-outer-spin-button,
+  .modal input.num::-webkit-inner-spin-button{
+    -webkit-appearance: none; margin: 0;
+  }
+
   .modal .bottom { display: flex; flex-direction: column; gap: 10px; }
   .modal button { border-radius: 8px; padding:8px 12px; }
 </style>
@@ -157,7 +182,6 @@
           <div id="drop" class="dropdown"></div>
         </div>
         <button id="clear" class="btn-ghost">Limpiar</button>
-        <!-- NUEVO: Filtro -->
         <button id="toggleFilter" class="btn-ghost">Ocultar terminadas</button>
       </div>
     </div>
@@ -176,7 +200,7 @@
       <img id="mPoster" src="" alt="">
       <div class="meta">
         <h3 id="mTitle"></h3>
-        <div class="muted" id="mInfo"></div>
+        <div class="muted" id="mInfo">Progreso de episodios</div>
         <div class="controls">
           <button id="mMinus">−1</button>
           <input id="mCurr" class="num" type="number" min="0" />
@@ -199,7 +223,7 @@
   </div>
 </div>
 
-<!-- ===== Firebase SDK (Compat) + Init — agregado ===== -->
+<!-- Firebase SDK (Compat) + Init -->
 https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js</script>
 https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
 <script>
@@ -218,39 +242,29 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
 </script>
 
 <script>
-  /* ===== STORAGE — reemplazado por Firebase ===== */
-  const KEY = 'series_watchlist_tvmaze_v3';
+  /* ===== STORAGE (Firebase) ===== */
+  const KEY = 'series_watchlist_tvmaze_v3'; // compat
 
-  // CARGA: devuelve [] de inmediato; luego sincroniza desde Firestore y re-renderiza.
   const load = () => {
     setTimeout(async () => {
       try {
         const snap = await coll.get();
         const data = snap.docs.map(d => d.data()).sort((a,b) => b.id.localeCompare(a.id));
-        shows = data.map(s => ({ next: null, checkedAt: 0, ...s }));
-        if (typeof updateFilterButton === 'function') updateFilterButton();
-        if (typeof render === 'function') render();
-        if (typeof refreshAllNext === 'function') refreshAllNext(true);
-      } catch (e) {
-        console.error('Firebase load error:', e);
-      }
+        shows = data.map(s => ({ next: null, checkedAt: 0, curr: 0, total: 0, poster:'', title:'', ...s }));
+        updateFilterButton();
+        render();
+        refreshAllNext(true);
+      } catch (e) { console.error('Firebase load error:', e); }
     }, 0);
     return [];
   };
 
-  // GUARDAR: misma firma save(data); escribe/upserta y limpia docs eliminados.
   const save = (data) => {
     (async () => {
       const batch = db.batch();
       const ids = new Set();
-      data.forEach(s => {
-        if (!s || !s.id) return;
-        ids.add(s.id);
-        batch.set(coll.doc(s.id), s, { merge: true });
-      });
+      data.forEach(s => { if (!s || !s.id) return; ids.add(s.id); batch.set(coll.doc(s.id), s, { merge: true }); });
       await batch.commit();
-
-      // Limpieza: borra lo que ya no está en 'data'
       const snap = await coll.get();
       const toDelete = snap.docs.filter(d => !ids.has(d.id));
       if (toDelete.length) {
@@ -261,12 +275,11 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
     })().catch(e => console.error('Firebase save error:', e));
   };
 
-  // Preferencia del filtro: usamos la misma clave que tu ORIGEN Firebase
   const getHideDone = () => JSON.parse(localStorage.getItem('series_hideDone') || 'false');
   const setHideDone = (v) => localStorage.setItem('series_hideDone', JSON.stringify(!!v));
 
   /* ===== STATE ===== */
-  let shows = load(); // se reemplazará asincrónicamente con Firestore
+  let shows = load();
   let results = [];
   let activeIndex = -1;
   let hideDone = getHideDone();
@@ -298,7 +311,65 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
     toggleFilterBtn.textContent = hideDone ? 'Mostrar terminadas' : 'Ocultar terminadas';
   }
 
-  /* ===== RENDER GRID (tu lógica intacta) ===== */
+  /* ===== HELPERS: Próximo episodio (TVMaze) ===== */
+  function buildNotifyBadge(s){
+    if (!s.next) return null;
+    const span = document.createElement('span');
+    if (s.next.available) {
+      span.className = 'notify';
+      span.textContent = `E${s.next.num} DISPONIBLE`;
+    } else {
+      span.className = 'notify upcoming';
+      const label = s.next.airDate
+        ? new Date(s.next.airDate).toLocaleDateString(undefined, {month:'short', day:'2-digit'})
+        : 'pronto';
+      span.textContent = `E${s.next.num} · ${label}`;
+    }
+    return span;
+  }
+  function shouldCheck(s){
+    const SIX_HOURS = 6 * 60 * 60 * 1000;
+    return !s.checkedAt || (Date.now() - s.checkedAt) > SIX_HOURS;
+  }
+  async function lazyUpdateNext(s){
+    if (!s || !s.tvmaze_id) return;
+    if (!shouldCheck(s)) return;
+    try{
+      const resp = await fetch(`https://api.tvmaze.com/shows/${s.tvmaze_id}/episodes`);
+      if(!resp.ok) throw new Error('HTTP '+resp.status);
+      const eps = await resp.json();
+
+      const nextIdx = s.curr || 0; // 0-based
+      let next = null;
+
+      if (Array.isArray(eps) && eps.length > nextIdx){
+        const nx = eps[nextIdx];
+        const airStamp = nx.airstamp ? Date.parse(nx.airstamp) : null; // UTC
+        const airDate = nx.airdate || null;
+        const available = airStamp ? (Date.now() >= airStamp) : !!(airDate && Date.parse(airDate));
+        next = { num: (s.curr || 0) + 1, title: nx.name || '', airStamp, airDate, available };
+      } else {
+        next = null;
+      }
+
+      s.total = Array.isArray(eps) ? eps.length : (s.total || 0);
+      s.next = next;
+      s.checkedAt = Date.now();
+      save(shows);
+      render();
+    }catch(e){
+      s.checkedAt = Date.now();
+      save(shows);
+    }
+  }
+  async function refreshAllNext(force=false){
+    for (const s of shows || []){
+      if (force) s.checkedAt = 0;
+      await lazyUpdateNext(s);
+    }
+  }
+
+  /* ===== RENDER GRID ===== */
   function render() {
     grid.innerHTML = '';
     if (!shows || shows.length === 0) { empty.style.display = 'block'; return; }
@@ -329,51 +400,86 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
       title.className = 'title';
       title.textContent = s.title;
 
-      // Badge de siguiente episodio (deja tu helper si lo tenías; aquí versión simple)
-      const badge = s.next ? document.createElement('span') : null;
-      if (badge){
-        badge.className = 'notify';
-        badge.textContent = s.next;
-        title.appendChild(badge);
-      }
+      const badge = buildNotifyBadge(s);
+      if (badge) title.appendChild(badge);
 
-      card.appendChild(imgEl);
-      card.appendChild(title);
+      const isDone = (s.total || 0) > 0 && (s.curr || 0) >= s.total;
+      const state = document.createElement('div');
+      state.className = 'state' + (isDone ? ' done' : '');
+      state.textContent = isDone ? 'TERMINADA' : 'VIENDO';
+
+      const prog = document.createElement('div');
+      prog.className = 'progress';
+      prog.textContent = `E ${s.curr || 0}/${s.total || 0}`;
+
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      const barIn = document.createElement('div');
+      barIn.className = 'bar-in';
+      const pct = s.total ? Math.min(100, Math.round(100 * (s.curr||0) / s.total)) : 0;
+      barIn.style.width = pct + '%';
+      bar.appendChild(barIn);
+
+      card.append(imgEl, title, prog, bar, state);
       card.onclick = () => openModal(s);
       grid.appendChild(card);
+
+      lazyUpdateNext(s);
     }
   }
 
+  /* ===== MODAL ===== */
   function openModal(show){
     mPoster.src = show.poster || '';
     mTitle.textContent = show.title;
-    mInfo.textContent = `${show.year || ''} • ${show.type || ''}`;
+    mInfo.textContent = 'Progreso de episodios';
     mCurr.value = show.curr || 0;
-    mTotal.textContent = `de ${show.total || 0}`;
-    const percent = show.total ? (show.curr || 0)/show.total*100 : 0;
-    mBar.style.width = percent+'%';
-    mMarkDone.textContent = (show.curr >= show.total) ? 'Desmarcar terminada' : 'Marcar como terminada';
+    mCurr.min = 0;
+    mCurr.max = show.total || 0;
+    mTotal.textContent = `/ de ${show.total || 0} episodios`;
+    mBar.style.width = (show.total ? (100 * (show.curr||0) / show.total) : 0) + '%';
+    mMarkDone.textContent = (show.curr >= (show.total||0)) ? 'Desmarcar terminada' : 'Marcar como terminada';
     mb.style.display='flex';
 
-    mMinus.onclick = async ()=>{ show.curr = Math.max(0,(show.curr||0)-1); await save(shows); render(); openModal(show); };
-    mPlus.onclick  = async ()=>{ show.curr = Math.min(show.total||(show.curr||0)+1,(show.curr||0)+1); await save(shows); render(); openModal(show); };
-    mCurr.onchange = async ()=>{ show.curr = Number(mCurr.value); await save(shows); render(); openModal(show); };
+    const touch = async () => { save(shows); render(); openModal(show); };
+
+    mMinus.onclick = async ()=>{
+      show.curr = Math.max(0,(show.curr||0)-1);
+      show.checkedAt = 0; show.next = null;
+      await touch();
+    };
+    mPlus.onclick  = async ()=>{
+      const limit = show.total || ((show.curr||0)+1);
+      show.curr = Math.min(limit,(show.curr||0)+1);
+      show.checkedAt = 0; show.next = null;
+      await touch();
+    };
+    mCurr.onchange = async ()=>{
+      show.curr = Math.max(0, Math.min(show.total||0, Number(mCurr.value||0)));
+      show.checkedAt = 0; show.next = null;
+      await touch();
+    };
     mMarkDone.onclick = async ()=>{
       if((show.curr||0) >= (show.total||0)){ show.curr = 0; } else { show.curr = show.total || 0; }
-      await save(shows); render(); openModal(show);
+      show.checkedAt = 0; show.next = null;
+      await touch();
     };
-    mReset.onclick = async ()=>{ show.curr = 0; await save(shows); render(); openModal(show); };
+    mReset.onclick = async ()=>{
+      show.curr = 0;
+      show.checkedAt = 0; show.next = null;
+      await touch();
+    };
     mDelete.onclick = async ()=>{
       shows = shows.filter(s=>s.id!==show.id);
-      await save(shows); // la limpieza en Firestore se hace dentro de save()
+      await save(shows);
       render();
       mb.style.display='none';
     };
     mClose.onclick = ()=>{ mb.style.display='none'; };
   }
 
-  /* ===== BUSCADOR TVMAZE (tu lógica intacta) ===== */
-  let timer = null, results = [], activeIndex = -1;
+  /* ===== BUSCADOR TVMAZE ===== */
+  let timer = null;
 
   async function searchTVMaze(text){
     try{
@@ -462,17 +568,14 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
   }
 
   function makePlaceholder(){ const div = document.createElement('div'); div.className = 'mini placeholder'; div.textContent = '—'; return div; }
-
-  function updateActive(){
-    [...drop.children].forEach((el, i) => el.classList.toggle('active', i === activeIndex));
-  }
+  function updateActive(){ [...drop.children].forEach((el, i) => el.classList.toggle('active', i === activeIndex)); }
 
   q.addEventListener('keydown', (e)=>{
     if (drop.style.display !== 'block') return;
     const max = drop.children.length - 1;
     if (e.key === 'ArrowDown'){ e.preventDefault(); activeIndex = Math.min(max, activeIndex + 1); updateActive(); }
     else if (e.key === 'ArrowUp'){ e.preventDefault(); activeIndex = Math.max(0, activeIndex - 1); updateActive(); }
-    else if (e.key === 'Enter'){ e.preventDefault(); const idx = activeIndex >= 0 ? activeIndex : 0; const sh = results[idx]; if (sh) drop.children[idx]?.click(); }
+    else if (e.key === 'Enter'){ e.preventDefault(); const idx = activeIndex >= 0 ? activeIndex : 0; drop.children[idx]?.click(); }
     else if (e.key === 'Escape'){ drop.style.display = 'none'; }
   });
 
@@ -481,7 +584,12 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
     if(!t){ drop.style.display = 'none'; drop.innerHTML=''; results=[]; activeIndex=-1; return; }
     clearTimeout(timer); timer = setTimeout(()=>searchTVMaze(t), 300);
   });
-  clearBtn.onclick = () => { q.value=''; drop.style.display='none'; drop.innerHTML=''; results=[]; activeIndex=-1; };
+  clearBtn.onclick = async ()=>{
+    if (!confirm('¿Vaciar toda tu lista?')) return;
+    shows = [];
+    await save(shows);
+    render();
+  };
   document.addEventListener('click', e=>{ if (!e.target.closest('.searchbox')) drop.style.display = 'none'; });
 
   /* ===== FILTRO ===== */
@@ -496,10 +604,10 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
   /* Init UI */
   render();
 
-  /* ===== REFRESCO DE DISPONIBILIDAD (si usas tus helpers originales, puedes reinsertarlos) ===== */
-  // refreshAllNext();
-  // setInterval(refreshAllNext, 6 * 60 * 60 * 1000);
-  // document.addEventListener('visibilitychange', ()=>{ if (!document.hidden) refreshAllNext(); });
+  /* Refresco de disponibilidad */
+  refreshAllNext();
+  setInterval(refreshAllNext, 6 * 60 * 60 * 1000);
+  document.addEventListener('visibilitychange', ()=>{ if (!document.hidden) refreshAllNext(); });
 </script>
 </body>
 </html>
