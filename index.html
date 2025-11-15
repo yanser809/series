@@ -32,7 +32,7 @@
     color:#fff; padding:8px 18px; border-radius:10px; border:1px solid #4c0b0f;
     background:linear-gradient(90deg,var(--accent),var(--accent-2));
     text-shadow:0 1px 2px rgba(0,0,0,.6);
-    box-shadow: 0 6px 20px rgba(229,9,20,.18), inset 0 0 12px rgba(255,255,255,.08);
+    box-shadow: 0 6px 20px rgba(229,9,20,.18), inset 0 0 10px rgba(255,255,255,.06);
     transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
   }
   .badge.alt{ background:linear-gradient(90deg,var(--accent-2),var(--accent)); }
@@ -57,7 +57,7 @@
     border-radius:12px;
   }
 
-  /* Dropdown */
+  /* Dropdown con mini-póster, highlight y teclado */
   .dropdown{
     position:absolute; top:110%; left:0; right:0; background:#0b1220; border:1px solid var(--line); border-radius:12px;
     box-shadow:0 14px 40px rgba(0,0,0,.45); max-height:480px; overflow:auto; display:none; padding:6px;
@@ -74,9 +74,16 @@
   .mini.placeholder{
     display:flex; align-items:center; justify-content:center; font-size:.75rem; color:#666; background:linear-gradient(180deg,#0f172a,#0b1220);
   }
-  .opt .t{ font-weight:700; font-size:1.02rem; line-height:1.25; }
+  .opt .t{
+    font-weight:700; font-size:1.02rem; line-height:1.25; white-space:normal; word-break:break-word;
+  }
   .opt .s{ color:var(--muted); font-size:.95rem; margin-top:2px; }
-  .opt mark{ background:rgba(229,9,20,.28); color:#fff; padding:0 .1em; border-radius:3px; }
+  .opt mark{
+    background:rgba(229,9,20,.28);
+    color:#fff;
+    padding:0 .1em;
+    border-radius:3px;
+  }
 
   /* Grid */
   .section{ max-width:1200px; margin:18px auto; padding:0 16px }
@@ -121,50 +128,57 @@
     border-color:#14532d; background:rgba(34,197,94,.18); color:#bbf7d0;
   }
 
-  /* Modal */
+  /* Nuevo: Display de Usuario */
+  .userIdDisplay{
+    font-size:.7rem; color:var(--muted); text-align:center; margin-top:-10px; margin-bottom:10px;
+  }
+
+  /* ===== Nuevo diseño de modal compacto (modificado) ===== */
   .modal-back {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
     display: none; align-items: center; justify-content: center;
-    z-index: 100; backdrop-filter: blur(4px);
+    z-index: 100;
+    backdrop-filter: blur(4px);
   }
   .modal {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
-    width: 360px; padding: 20px; box-shadow: 0 8px 40px rgba(0,0,0,0.45);
-    display: flex; flex-direction: column; gap: 14px; animation: popIn .25s ease;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    width: 360px;
+    padding: 20px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.45);
+    display: flex; flex-direction: column; gap: 14px;
+    animation: popIn .25s ease;
   }
-  @keyframes popIn { from {transform: scale(.85); opacity: 0;} to {transform: scale(1); opacity: 1;} }
-  .modal .top { display: flex; align-items: flex-start; gap: 14px; }
-  .modal img { width: 100px; height: 150px; object-fit: cover; border-radius: 10px; border:1px solid var(--line); }
-  .modal .meta h3 { margin: 0; font-size: 1.05rem; }
-  .modal .meta .muted { color: var(--muted); font-size: .9rem; margin-bottom: 6px; }
-
-  /* ====== CONTROLES DEL MODAL (ajustes para que se vea el número) ====== */
+  @keyframes popIn {
+    from {transform: scale(.85); opacity: 0;}
+    to {transform: scale(1); opacity: 1;}
+  }
+  .modal .top {
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .modal img {
+    width: 100px; height: 150px;
+    object-fit: cover; border-radius: 10px; border:1px solid var(--line);
+  }
+  .modal .meta h3 {
+    margin: 0; font-size: 1.05rem;
+  }
+  .modal .meta .muted {
+    color: var(--muted); font-size: .9rem; margin-bottom: 6px;
+  }
   .modal .controls {
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
   }
   .modal input.num {
-    width: 72px;                 /* más ancho para que quepa el valor */
-    text-align: center;
-    font-size: 1rem;             /* más grande y legible */
-    line-height: 1.2;            /* evita recorte vertical */
-    padding: 8px 10px;           /* no queda “aplastado” */
-    z-index: 1;                  /* por encima de botones */
-    position: relative;
-    appearance: textfield;       /* oculta estilo nativo en la mayoría */
-    -moz-appearance: textfield;  /* Firefox */
-    background:#0c1222;
-    color: var(--text);
-    border:1px solid var(--line);
-    border-radius: 8px;
+    width: 50px; text-align: center;
   }
-  /* Quitar spinners WebKit */
-  .modal input.num::-webkit-outer-spin-button,
-  .modal input.num::-webkit-inner-spin-button{
-    -webkit-appearance: none; margin: 0;
+  .modal .bottom {
+    display: flex; flex-direction: column; gap: 10px;
   }
-
-  .modal .bottom { display: flex; flex-direction: column; gap: 10px; }
   .modal button { border-radius: 8px; padding:8px 12px; }
+
 </style>
 </head>
 <body>
@@ -176,12 +190,15 @@
         <div class="badge">SERIES</div>
         <div class="badge alt">WATCHLIST</div>
       </div>
+      <!-- NUEVO: Display de ID de usuario -->
+      <div id="userIdDisplay" class="userIdDisplay">Cargando datos del usuario...</div>
       <div class="row">
         <div class="searchbox">
           <input id="q" type="text" placeholder="Buscar series… (ej. Dark, Friends, The Office)" autocomplete="off"/>
           <div id="drop" class="dropdown"></div>
         </div>
         <button id="clear" class="btn-ghost">Limpiar</button>
+        <!-- NUEVO: Filtro -->
         <button id="toggleFilter" class="btn-ghost">Ocultar terminadas</button>
       </div>
     </div>
@@ -193,14 +210,14 @@
   <div id="empty" class="empty" style="display:none;">No tienes series aún. Busca arriba y agrégalas 🍿</div>
 </main>
 
-<!-- Modal -->
+<!-- Modal (modificado, mismo IDs que el original) -->
 <div id="mb" class="modal-back">
   <div class="modal">
     <div class="top">
       <img id="mPoster" src="" alt="">
       <div class="meta">
         <h3 id="mTitle"></h3>
-        <div class="muted" id="mInfo">Progreso de episodios</div>
+        <div class="muted" id="mInfo"></div>
         <div class="controls">
           <button id="mMinus">−1</button>
           <input id="mCurr" class="num" type="number" min="0" />
@@ -223,64 +240,33 @@
   </div>
 </div>
 
-<!-- Firebase SDK (Compat) + Init -->
-https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js</script>
-https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyAQpxEWjV_J3AfyBDR4EWEmSrgFjW16z9k",
-    authDomain: "series-80d83.firebaseapp.com",
-    projectId: "series-80d83",
-    storageBucket: "series-80d83.firebasestorage.app",
-    messagingSenderId: "959880535049",
-    appId: "1:959880535049:web:148625072c52de0acbacd8",
-    measurementId: "G-7495M6CRN7"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const coll = db.collection('series_watchlist');
-</script>
+<script type="module">
+  // --- Importaciones de Firebase ---
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-<script>
-  /* ===== STORAGE (Firebase) ===== */
-  const KEY = 'series_watchlist_tvmaze_v3'; // compat
+  /* ===== STORAGE & FIREBASE CONFIGURATION ===== */
 
-  const load = () => {
-    setTimeout(async () => {
-      try {
-        const snap = await coll.get();
-        const data = snap.docs.map(d => d.data()).sort((a,b) => b.id.localeCompare(a.id));
-        shows = data.map(s => ({ next: null, checkedAt: 0, curr: 0, total: 0, poster:'', title:'', ...s }));
-        updateFilterButton();
-        render();
-        refreshAllNext(true);
-      } catch (e) { console.error('Firebase load error:', e); }
-    }, 0);
-    return [];
-  };
+  // Variables globales proporcionadas por el entorno (USO OBLIGATORIO)
+  const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+  const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+  const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-  const save = (data) => {
-    (async () => {
-      const batch = db.batch();
-      const ids = new Set();
-      data.forEach(s => { if (!s || !s.id) return; ids.add(s.id); batch.set(coll.doc(s.id), s, { merge: true }); });
-      await batch.commit();
-      const snap = await coll.get();
-      const toDelete = snap.docs.filter(d => !ids.has(d.id));
-      if (toDelete.length) {
-        const delBatch = db.batch();
-        toDelete.forEach(d => delBatch.delete(d.ref));
-        await delBatch.commit();
-      }
-    })().catch(e => console.error('Firebase save error:', e));
-  };
+  // Servicios de Firebase
+  let app, db, auth;
+  let userId = null;
+  let isAuthReady = false;
+  let firestoreListener = null;
 
-  const getHideDone = () => JSON.parse(localStorage.getItem('series_hideDone') || 'false');
-  const setHideDone = (v) => localStorage.setItem('series_hideDone', JSON.stringify(!!v));
+  // Clave para el filtro local (se mantiene en localStorage)
+  const KEY_FILTER = 'series_watchlist_tvmaze_v3_hideDone';
+  const getHideDone = () => JSON.parse(localStorage.getItem(KEY_FILTER) || 'false');
+  const setHideDone = (v) => localStorage.setItem(KEY_FILTER, JSON.stringify(!!v));
 
-  /* ===== STATE ===== */
-  let shows = load();
-  let results = [];
+  /* ===== STATE (se carga desde Firestore) ===== */
+  let shows = []; // {id, tvmaze_id, title, poster, total, curr, next?, checkedAt?}
+  let results = []; // resultados de búsqueda
   let activeIndex = -1;
   let hideDone = getHideDone();
 
@@ -291,6 +277,7 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
   const grid = document.getElementById('grid');
   const empty = document.getElementById('empty');
   const toggleFilterBtn = document.getElementById('toggleFilter');
+  const userIdDisplay = document.getElementById('userIdDisplay'); // Nuevo elemento
 
   // Modal
   const mb = document.getElementById('mb');
@@ -307,78 +294,100 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
   const mDelete = document.getElementById('mDelete');
   const mClose  = document.getElementById('mClose');
 
+
+  // --- FUNCIONES DE FIREBASE ---
+
+  function getCollectionRef() {
+    if (!db || !userId) return null;
+    // Ruta de colección privada: /artifacts/{appId}/users/{userId}/watchlist_series
+    return collection(db, 'artifacts', appId, 'users', userId, 'watchlist_series');
+  }
+
+  function startFirestoreListener() {
+    if (firestoreListener) firestoreListener(); // Desconectar listener previo
+    const colRef = getCollectionRef();
+    if (!colRef) return;
+
+    // onSnapshot para actualizaciones de datos en tiempo real
+    firestoreListener = onSnapshot(colRef, (snapshot) => {
+      shows = []; // Resetear array local
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        shows.push({
+          id: doc.id,
+          ...data,
+          // Asegurar la conversión de tipos (necesario si se guardan como string por seguridad)
+          curr: Number(data.curr) || 0,
+          total: Number(data.total) || 0,
+          checkedAt: Number(data.checkedAt) || 0,
+          // `next` ya es un objeto si existe
+        });
+      });
+      console.log(`[Firestore] Se cargaron ${shows.length} series.`);
+      render();
+      // Forzar la actualización del siguiente episodio después de cargar los datos
+      refreshAllNext();
+    }, (error) => {
+      console.error("[Firestore] Error al escuchar cambios:", error);
+    });
+  }
+
+  async function saveSeriesItem(item) {
+    if (!db || !userId || !isAuthReady) {
+      console.error("[Firestore] No se pudo guardar: Autenticación no lista o ID de usuario no disponible.");
+      return;
+    }
+    const colRef = getCollectionRef();
+    if (!colRef) return;
+
+    // Usar item.id como el ID del documento
+    const docRef = doc(colRef, item.id);
+
+    // Preparar datos para guardar (quitar el ID ya que es el ID del documento)
+    const { id, ...dataToSave } = item;
+
+    try {
+      // Usar setDoc para crear o actualizar
+      await setDoc(docRef, dataToSave, { merge: true });
+    } catch(e) {
+      console.error("[Firestore] Error al guardar la serie:", e);
+    }
+  }
+
+  async function deleteSeriesItem(id) {
+    if (!db || !userId || !isAuthReady) {
+      console.error("[Firestore] No se pudo eliminar: Autenticación no lista o ID de usuario no disponible.");
+      return;
+    }
+    const colRef = getCollectionRef();
+    if (!colRef) return;
+
+    try {
+      await deleteDoc(doc(colRef, id));
+    } catch(e) {
+      console.error("[Firestore] Error al eliminar la serie:", e);
+    }
+  }
+
+  // --- FIN FUNCIONES DE FIREBASE ---
+
+
   function updateFilterButton(){
     toggleFilterBtn.textContent = hideDone ? 'Mostrar terminadas' : 'Ocultar terminadas';
-  }
-
-  /* ===== HELPERS: Próximo episodio (TVMaze) ===== */
-  function buildNotifyBadge(s){
-    if (!s.next) return null;
-    const span = document.createElement('span');
-    if (s.next.available) {
-      span.className = 'notify';
-      span.textContent = `E${s.next.num} DISPONIBLE`;
-    } else {
-      span.className = 'notify upcoming';
-      const label = s.next.airDate
-        ? new Date(s.next.airDate).toLocaleDateString(undefined, {month:'short', day:'2-digit'})
-        : 'pronto';
-      span.textContent = `E${s.next.num} · ${label}`;
-    }
-    return span;
-  }
-  function shouldCheck(s){
-    const SIX_HOURS = 6 * 60 * 60 * 1000;
-    return !s.checkedAt || (Date.now() - s.checkedAt) > SIX_HOURS;
-  }
-  async function lazyUpdateNext(s){
-    if (!s || !s.tvmaze_id) return;
-    if (!shouldCheck(s)) return;
-    try{
-      const resp = await fetch(`https://api.tvmaze.com/shows/${s.tvmaze_id}/episodes`);
-      if(!resp.ok) throw new Error('HTTP '+resp.status);
-      const eps = await resp.json();
-
-      const nextIdx = s.curr || 0; // 0-based
-      let next = null;
-
-      if (Array.isArray(eps) && eps.length > nextIdx){
-        const nx = eps[nextIdx];
-        const airStamp = nx.airstamp ? Date.parse(nx.airstamp) : null; // UTC
-        const airDate = nx.airdate || null;
-        const available = airStamp ? (Date.now() >= airStamp) : !!(airDate && Date.parse(airDate));
-        next = { num: (s.curr || 0) + 1, title: nx.name || '', airStamp, airDate, available };
-      } else {
-        next = null;
-      }
-
-      s.total = Array.isArray(eps) ? eps.length : (s.total || 0);
-      s.next = next;
-      s.checkedAt = Date.now();
-      save(shows);
-      render();
-    }catch(e){
-      s.checkedAt = Date.now();
-      save(shows);
-    }
-  }
-  async function refreshAllNext(force=false){
-    for (const s of shows || []){
-      if (force) s.checkedAt = 0;
-      await lazyUpdateNext(s);
-    }
   }
 
   /* ===== RENDER GRID ===== */
   function render() {
     grid.innerHTML = '';
-    if (!shows || shows.length === 0) { empty.style.display = 'block'; return; }
+    if (shows.length === 0) { empty.style.display = 'block'; return; }
     empty.style.display = 'none';
 
+    // 1) Filtrar (si está activo esconder terminadas)
     const filtered = hideDone
       ? shows.filter(s => !((s.total || 0) > 0 && (s.curr || 0) >= s.total))
       : [...shows];
 
+    // 2) Ordenar: Viendo primero, Terminada al final (estable)
     const sorted = [...filtered].sort((a, b) => {
       const aDone = (a.total || 0) > 0 && (a.curr || 0) >= a.total;
       const bDone = (b.total || 0) > 0 && (b.curr || 0) >= b.total;
@@ -400,9 +409,11 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
       title.className = 'title';
       title.textContent = s.title;
 
+      // Badge de siguiente episodio (si aplica)
       const badge = buildNotifyBadge(s);
       if (badge) title.appendChild(badge);
 
+      // Estado Viendo/Terminada
       const isDone = (s.total || 0) > 0 && (s.curr || 0) >= s.total;
       const state = document.createElement('div');
       state.className = 'state' + (isDone ? ' done' : '');
@@ -410,7 +421,7 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
 
       const prog = document.createElement('div');
       prog.className = 'progress';
-      prog.textContent = `E ${s.curr || 0}/${s.total || 0}`;
+      prog.textContent = `E ${s.curr}/${s.total || 0}`;
 
       const bar = document.createElement('div');
       bar.className = 'bar';
@@ -421,62 +432,121 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
       bar.appendChild(barIn);
 
       card.append(imgEl, title, prog, bar, state);
-      card.onclick = () => openModal(s);
+      card.onclick = () => openModal(s.id);
       grid.appendChild(card);
+    }
+  }
 
-      lazyUpdateNext(s);
+  /* ===== BADGE HELPERS ===== */
+  function buildNotifyBadge(s){
+    if (!s.next) return null;
+    const span = document.createElement('span');
+    if (s.next.available) {
+      span.className = 'notify';
+      span.textContent = `E${s.next.num} DISPONIBLE`;
+    } else {
+      span.className = 'notify upcoming';
+      const label = s.next.airDate ? new Date(s.next.airDate).toLocaleDateString(undefined, {month:'short', day:'2-digit'}) : 'pronto';
+      span.textContent = `E${s.next.num} · ${label}`;
+    }
+    return span;
+  }
+
+  function shouldCheck(s){
+    const SIX_HOURS = 6 * 60 * 60 * 1000;
+    return !s.checkedAt || (Date.now() - s.checkedAt) > SIX_HOURS;
+  }
+
+  async function lazyUpdateNext(s){
+    if (!s || !s.tvmaze_id || !isAuthReady) return; // Control de autenticación
+    if (!shouldCheck(s)) return;
+    try{
+      const resp = await fetch(`https://api.tvmaze.com/shows/${s.tvmaze_id}/episodes`);
+      if(!resp.ok) throw new Error('HTTP '+resp.status);
+      const eps = await resp.json();
+
+      const nextIdx = s.curr; // siguiente a ver (0-based)
+      let next = null;
+
+      if (Array.isArray(eps) && eps.length > nextIdx){
+        const nx = eps[nextIdx];
+        const airStamp = nx.airstamp ? Date.parse(nx.airstamp) : null; // UTC
+        const airDate = nx.airdate || null;
+        const available = airStamp ? (Date.now() >= airStamp) : !!airDate;
+        next = {
+          num: s.curr + 1,
+          title: nx.name || '',
+          airStamp, airDate, available
+        };
+      } else {
+        next = null;
+      }
+
+      s.total = Array.isArray(eps) ? eps.length : (s.total || 0); // actualiza total si cambió
+      s.next = next;
+      s.checkedAt = Date.now();
+      await saveSeriesItem(s); // Guardar el objeto actualizado en Firestore
+      // render() es llamado por onSnapshot
+    }catch(e){
+      console.error(`Error al actualizar next de ${s.title}: ${e.message}`);
+      s.checkedAt = Date.now();
+      await saveSeriesItem(s); // Guardar la marca de tiempo a pesar del error
+      // render() es llamado por onSnapshot
+    }
+  }
+
+  async function refreshAllNext(force=false){
+    if (!isAuthReady) return; // Control de autenticación
+    for (const s of shows){
+      if (force) s.checkedAt = 0;
+      // Usar await para evitar sobrecargar el rate limit de TVMaze
+      await lazyUpdateNext(s);
     }
   }
 
   /* ===== MODAL ===== */
-  function openModal(show){
-    mPoster.src = show.poster || '';
-    mTitle.textContent = show.title;
+  let modalId = null;
+  function openModal(id){
+    modalId = id;
+    const s = shows.find(x => x.id === id);
+    if (!s) return;
+    mPoster.src = s.poster || '';
+    mTitle.textContent = s.title;
     mInfo.textContent = 'Progreso de episodios';
-    mCurr.value = show.curr || 0;
+    mCurr.value = s.curr || 0;
     mCurr.min = 0;
-    mCurr.max = show.total || 0;
-    mTotal.textContent = `/ de ${show.total || 0} episodios`;
-    mBar.style.width = (show.total ? (100 * (show.curr||0) / show.total) : 0) + '%';
-    mMarkDone.textContent = (show.curr >= (show.total||0)) ? 'Desmarcar terminada' : 'Marcar como terminada';
-    mb.style.display='flex';
-
-    const touch = async () => { save(shows); render(); openModal(show); };
-
-    mMinus.onclick = async ()=>{
-      show.curr = Math.max(0,(show.curr||0)-1);
-      show.checkedAt = 0; show.next = null;
-      await touch();
-    };
-    mPlus.onclick  = async ()=>{
-      const limit = show.total || ((show.curr||0)+1);
-      show.curr = Math.min(limit,(show.curr||0)+1);
-      show.checkedAt = 0; show.next = null;
-      await touch();
-    };
-    mCurr.onchange = async ()=>{
-      show.curr = Math.max(0, Math.min(show.total||0, Number(mCurr.value||0)));
-      show.checkedAt = 0; show.next = null;
-      await touch();
-    };
-    mMarkDone.onclick = async ()=>{
-      if((show.curr||0) >= (show.total||0)){ show.curr = 0; } else { show.curr = show.total || 0; }
-      show.checkedAt = 0; show.next = null;
-      await touch();
-    };
-    mReset.onclick = async ()=>{
-      show.curr = 0;
-      show.checkedAt = 0; show.next = null;
-      await touch();
-    };
-    mDelete.onclick = async ()=>{
-      shows = shows.filter(s=>s.id!==show.id);
-      await save(shows);
-      render();
-      mb.style.display='none';
-    };
-    mClose.onclick = ()=>{ mb.style.display='none'; };
+    mCurr.max = s.total || 0;
+    mTotal.textContent = `/ de ${s.total || 0} episodios`;
+    mBar.style.width = (s.total ? (100 * (s.curr||0) / s.total) : 0) + '%';
+    mb.style.display = 'flex';
   }
+  function closeModal(){ mb.style.display = 'none'; modalId = null; }
+  function updateCurr(v){
+    const s = shows.find(x => x.id === modalId);
+    if (!s || !isAuthReady) return;
+
+    s.curr = Math.max(0, Math.min(s.total || 0, v|0));
+    // Forzar recálculo del siguiente episodio
+    s.checkedAt = 0;
+    s.next = null;
+    saveSeriesItem(s); // NEW: Usar Firestore update
+    openModal(s.id);
+    // render() es llamado por onSnapshot
+  }
+  mMinus.onclick = () => { if(modalId){ const s = shows.find(x=>x.id===modalId); updateCurr((s.curr||0)-1); } };
+  mPlus.onclick  = () => { if(modalId){ const s = shows.find(x=>x.id===modalId); updateCurr((s.curr||0)+1); } };
+  mCurr.addEventListener('change', e => updateCurr(parseInt(e.target.value || '0',10)));
+  mMarkDone.onclick = () => { if(modalId){ const s=shows.find(x=>x.id===modalId); updateCurr(s.total||0); } };
+  mReset.onclick = () => updateCurr(0);
+  mDelete.onclick = () => {
+    if(!modalId) return;
+    // Eliminado: window.confirm() -> se asume que el usuario confirma al hacer click en el botón dentro del modal
+    deleteSeriesItem(modalId); // NEW: Usar Firestore delete
+    closeModal();
+    // render() es llamado por onSnapshot
+  };
+  mClose.onclick = closeModal;
+  mb.addEventListener('click', e => { if (e.target === mb) closeModal(); });
 
   /* ===== BUSCADOR TVMAZE ===== */
   let timer = null;
@@ -500,7 +570,7 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
     const q = query.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     return escapeHtml(text).replace(new RegExp(q, 'ig'), m => `<mark>${m}</mark>`);
   }
-  function escapeHtml(s){ return (s||'').replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
   function renderDropdown(list, query){
     if (!list.length){
@@ -532,35 +602,7 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
       `;
 
       row.append(miniCol, textCol);
-      row.onclick = async () => {
-        drop.style.display = 'none';
-        try{
-          const resp = await fetch(`https://api.tvmaze.com/shows/${sh.id}/episodes`);
-          if(!resp.ok) throw new Error('HTTP '+resp.status);
-          const episodes = await resp.json();
-          const total = Array.isArray(episodes) ? episodes.length : 0;
-
-          const exists = shows.some(x => x.tvmaze_id === sh.id);
-          if (exists){ alert('Ya está en tu lista'); return; }
-
-          const poster = sh.image ? (sh.image.original || sh.image.medium) : '';
-          const item = {
-            id: crypto.randomUUID(),
-            tvmaze_id: sh.id,
-            title: sh.name || 'Sin título',
-            poster,
-            total,
-            curr: 0,
-            next: null,
-            checkedAt: 0
-          };
-          shows.unshift(item);
-          save(shows);
-          render();
-        }catch(e){
-          alert('No se pudo agregar: '+e.message);
-        }
-      };
+      row.onclick = () => selectShow(sh);
       drop.appendChild(row);
     });
     drop.style.display = 'block';
@@ -568,14 +610,57 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
   }
 
   function makePlaceholder(){ const div = document.createElement('div'); div.className = 'mini placeholder'; div.textContent = '—'; return div; }
-  function updateActive(){ [...drop.children].forEach((el, i) => el.classList.toggle('active', i === activeIndex)); }
+
+  async function selectShow(show){
+    drop.style.display = 'none';
+    if (!isAuthReady) { console.error("No se pudo agregar: Autenticación no lista."); return; }
+
+    try{
+      const resp = await fetch(`https://api.tvmaze.com/shows/${show.id}/episodes`);
+      if(!resp.ok) throw new Error('HTTP '+resp.status);
+      const episodes = await resp.json();
+      const total = Array.isArray(episodes) ? episodes.length : 0;
+
+      const exists = shows.some(x => x.tvmaze_id === show.id);
+      if (exists){ console.log('Ya está en tu lista'); return; } // Sustituido alert() por console.log
+
+      const poster = show.image ? (show.image.original || show.image.medium) : '';
+      const item = {
+        id: crypto.randomUUID(),
+        tvmaze_id: show.id,
+        title: show.name || 'Sin título',
+        poster,
+        total,
+        curr: 0,
+        next: null,
+        checkedAt: 0
+      };
+      // shows.unshift(item); // Ya no se actualiza el array local directamente
+      await saveSeriesItem(item); // NEW: Usar Firestore add/setDoc
+      // render() es llamado por onSnapshot
+    }catch(e){
+      console.error('No se pudo agregar: '+e.message); // Sustituido alert() por console.error
+    }
+  }
+
+  function updateActive(){
+    [...drop.children].forEach((el, i) => el.classList.toggle('active', i === activeIndex));
+    const activeEl = drop.children[activeIndex];
+    if (activeEl){
+      const boxTop = drop.scrollTop, boxBottom = boxTop + drop.clientHeight;
+      const elTop = activeEl.offsetTop, elBottom = elTop + el.offsetHeight;
+      // Scroll to active element if out of view (original logic kept)
+      if (elTop < boxTop) drop.scrollTop = elTop;
+      else if (elBottom > boxBottom) drop.scrollTop = elBottom - drop.clientHeight;
+    }
+  }
 
   q.addEventListener('keydown', (e)=>{
     if (drop.style.display !== 'block') return;
     const max = drop.children.length - 1;
     if (e.key === 'ArrowDown'){ e.preventDefault(); activeIndex = Math.min(max, activeIndex + 1); updateActive(); }
     else if (e.key === 'ArrowUp'){ e.preventDefault(); activeIndex = Math.max(0, activeIndex - 1); updateActive(); }
-    else if (e.key === 'Enter'){ e.preventDefault(); const idx = activeIndex >= 0 ? activeIndex : 0; drop.children[idx]?.click(); }
+    else if (e.key === 'Enter'){ e.preventDefault(); const idx = activeIndex >= 0 ? activeIndex : 0; const sh = results[idx]; if (sh) selectShow(sh); }
     else if (e.key === 'Escape'){ drop.style.display = 'none'; }
   });
 
@@ -584,12 +669,7 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
     if(!t){ drop.style.display = 'none'; drop.innerHTML=''; results=[]; activeIndex=-1; return; }
     clearTimeout(timer); timer = setTimeout(()=>searchTVMaze(t), 300);
   });
-  clearBtn.onclick = async ()=>{
-    if (!confirm('¿Vaciar toda tu lista?')) return;
-    shows = [];
-    await save(shows);
-    render();
-  };
+  clearBtn.onclick = () => { q.value=''; drop.style.display='none'; drop.innerHTML=''; results=[]; activeIndex=-1; };
   document.addEventListener('click', e=>{ if (!e.target.closest('.searchbox')) drop.style.display = 'none'; });
 
   /* ===== FILTRO ===== */
@@ -601,13 +681,63 @@ https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js</script>
     render();
   });
 
-  /* Init UI */
-  render();
+  // --- FUNCIÓN DE INICIO PRINCIPAL ---
+  function initApp(){
+    // Iniciar el listener de Firestore para cargar los datos en tiempo real
+    startFirestoreListener();
 
-  /* Refresco de disponibilidad */
-  refreshAllNext();
-  setInterval(refreshAllNext, 6 * 60 * 60 * 1000);
-  document.addEventListener('visibilitychange', ()=>{ if (!document.hidden) refreshAllNext(); });
+    // Iniciar el refresco periódico de disponibilidad (si la auth está lista)
+    if (isAuthReady) {
+      setInterval(refreshAllNext, 6 * 60 * 60 * 1000);     // cada 6 horas
+      document.addEventListener('visibilitychange', ()=>{  // al volver a la pestaña
+        if (!document.hidden) refreshAllNext();
+      });
+    }
+
+    render(); // Render inicial (mostrará el mensaje "No tienes series aún" hasta que Firestore cargue)
+  }
+
+  // --- INICIALIZACIÓN DE FIREBASE Y AUTENTICACIÓN ---
+  if (Object.keys(firebaseConfig).length > 0) {
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    auth = getAuth(app);
+
+    userIdDisplay.textContent = 'Conectando a Firebase...';
+
+    // 1. Escuchar el cambio de estado de Autenticación
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        userId = user.uid;
+        isAuthReady = true;
+        userIdDisplay.textContent = `ID de Usuario: ${userId}`;
+        console.log("Firebase Auth Listo. User ID:", userId);
+        initApp();
+      } else {
+        // Si el estado inicial es null, intentamos el sign-in
+        if (!isAuthReady) {
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch(error) {
+                console.error("Firebase Sign-in fallido:", error);
+                isAuthReady = true; // Marcar como listo para evitar bucles
+                userIdDisplay.textContent = 'Error de autenticación. Datos no disponibles.';
+            }
+        }
+      }
+    });
+  } else {
+    // Caso de configuración faltante, no debería pasar en el entorno de Canvas
+    console.error("Falta la configuración de Firebase.");
+    isAuthReady = true;
+    userIdDisplay.textContent = 'Error: Falta Configuración de Firebase.';
+    initApp();
+  }
+
 </script>
 </body>
 </html>
