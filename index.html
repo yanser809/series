@@ -44,6 +44,16 @@
   .badge.alt{ background:linear-gradient(90deg,var(--accent-2),var(--accent)); }
   .badge:hover{ transform:translateY(-2px) scale(1.03); filter:brightness(1.06); box-shadow:0 16px 36px rgba(229,9,20,.25), inset 0 0 12px rgba(255,255,255,.08); }
 
+  .header-logo {
+    width: 120px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .header-logo:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  }
   .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center; margin-top:10px; }
   input,button{ padding:12px 14px; border-radius:10px; border:1px solid var(--line); background:#0c1222; color:var(--text); }
   button{ cursor:pointer; transition:.2s ease }
@@ -157,14 +167,18 @@
   .card:hover{ transform:translateY(-3px) scale(1.03); box-shadow:0 16px 36px rgba(0,0,0,.35); filter:brightness(1.03); }
   .poster{ width:100%; aspect-ratio:2/3; object-fit:cover; background:#101623; display:block }
   /* Override poster size to 210x295px */
-  .poster{ width:210px; height:340px; }
+  .poster{ width:100%; height:auto; }
   .title{
-    position:absolute; left:8px; right:8px; bottom:8px;
-    background:linear-gradient(180deg,transparent,rgba(0,0,0,.88));
-    padding:40px 10px 10px; border-radius:10px; color:#fff; font-weight:800;
-    text-shadow:0 1px 2px rgba(0,0,0,.8); font-family:'Cinzel', serif; letter-spacing:.03rem; font-size:1rem; line-height:1.25;
+    padding: 12px 10px 8px;
+    font-family: 'Cinzel', serif;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1.3;
     display:-webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow:hidden;
+    letter-spacing: .03rem;
   }
+
   .progress{ position:absolute; top:8px; right:8px; background:rgba(0,0,0,.65); border:1px solid var(--line); padding:3px 8px; border-radius:999px; font-size:.85rem; color:#fff }
   .bar{ height:4px; background:#1f2937 }
   .bar-in{ height:100%; background:linear-gradient(90deg,#22c55e,#f59e0b); width:0% }
@@ -203,7 +217,7 @@
     background: var(--panel);
     border: 1px solid var(--line);
     border-radius: 16px;
-    width: 360px;
+    width: 420px;
     padding: 20px;
     box-shadow: 0 8px 40px rgba(0,0,0,0.45);
     display: flex; flex-direction: column; gap: 14px;
@@ -236,6 +250,24 @@
     display: flex; flex-direction: column; gap: 10px;
   }
   .modal button { border-radius: 8px; padding:8px 12px; }
+  .modal .modern-controls { justify-content: center; margin-top: 10px; }
+  .modal .modern-controls button { font-size: 1rem; background: #222; color: #fbbf24; border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; }
+  .modal .ep-num { font-weight: bold; font-size: .95rem; color: #fff; background: rgba(0,0,0,0.13); border-radius: 6px; padding: 4px 8px; margin: 0 2px; }
+  .modal .next-ep-info { margin-top: 8px; font-size: 1.05rem; font-weight: bold; padding: 7px 12px; border-radius: 8px; text-align: center; }
+  .modal .next-ep-info.upcoming { color: #fbbf24; background: rgba(251,191,36,0.18); }
+  .modal .next-ep-info.available { color: var(--muted); background: rgba(156,163,175,0.08); }
+  .modal select#mSeasonSelect {
+    background: rgba(34,197,94,0.18); color: #22c55e;
+    font-weight: bold; font-size: 1rem;
+    border: 1px solid var(--line); border-radius: 8px;
+    padding: 8px 12px;
+    -webkit-appearance: none; appearance: none;
+    cursor: pointer;
+  }
+  .modal .bottom .controls { justify-content: center; display: flex; gap: 16px; }
+
+
+  .card{display:flex;flex-direction:column;align-items:center;gap:8px;}
 </style>
 </head>
 <body>
@@ -243,10 +275,12 @@
 <header>
   <div class="wrap">
     <div class="hero">
-      <div class="badges">
-        <img src="https://e7.pngegg.com/pngimages/243/592/png-clipart-popcorn-cinema-fizzy-drinks-film-popcorn-film-almaty.png" alt="Popcorn" style="width:32px;height:auto;margin-right:8px;"/>
-        <div class="badge">SERIES</div>
-        <div class="badge alt">WATCHLIST</div>
+      <div style="display: flex; align-items: center; gap: 24px;">
+        <img class="header-logo" src="https://thumbs.dreamstime.com/b/cinema-ensign-movie-time-banner-60575002.jpg">
+        <div class="badges">
+          <div class="badge">Series</div>
+          <div class="badge alt">Watchlist</div>
+        </div>
       </div>
       <div class="row">
         <div class="searchbox">
@@ -271,20 +305,19 @@
       <img id="mPoster" src="" alt="">
       <div class="meta">
         <h3 id="mTitle"></h3>
-        <div class="muted" id="mInfo"></div>
-        <div class="controls">
-          <button id="mMinus">−1</button>
-          <input id="mCurr" class="num" type="number" min="0" />
-          <button id="mPlus">+1</button>
-          <span class="muted" id="mTotal"></span>
+        <div class="muted" id="mInfo"></div> <!-- Year, Type -->
+        <div id="mNextEpInfo" class="next-ep-info"></div>
+        <div class="controls modern-controls">
+            <button id="mPrevEp">⟨</button>
+            <span id="mEpNum" class="ep-num"></span>
+            <button id="mNextEp">⟩</button>
         </div>
-        <div class="bar" style="margin-top:6px;"><div id="mBar" class="bar-in"></div></div>
       </div>
     </div>
     <div class="bottom">
       <div class="controls">
         <button id="mMarkDone" class="btn-ghost" style="border:1px solid var(--line)">Marcar como terminada</button>
-        <button id="mReset" class="btn-ghost">Reiniciar (episodio 0)</button>
+        <select id="mSeasonSelect" style="display:none;"></select>
       </div>
       <div class="controls">
         <button id="mDelete" class="btn-ghost" style="color:#fca5a5;border-color:#7f1d1d">Eliminar</button>
@@ -318,11 +351,11 @@
     const data = snapshot.docs.map(d => d.data());
     return data.sort((a,b)=>b.id.localeCompare(a.id)); // orden descendente por id
   };
-  const save = async (data) => {
-    for(const s of data){
-      await setDoc(doc(coll, s.id), s);
-    }
+  const saveShow = async (show) => {
+    await setDoc(doc(coll, show.id), show);
   };
+  const saveAllShows = async (shows) => { for(const s of shows){ await setDoc(doc(coll, s.id), s); } };
+
   const deleteFromDB = async (id) => {
     await deleteDoc(doc(coll,id));
   };
@@ -333,6 +366,7 @@
   let shows = await load();
   let results = [];
   let activeIndex = -1;
+  let currentShow = null; // Para saber qué serie está en el modal
   let hideDone = getHideDone();
 
   const q = document.getElementById('q');
@@ -345,14 +379,13 @@
   const mb = document.getElementById('mb');
   const mPoster = document.getElementById('mPoster');
   const mTitle  = document.getElementById('mTitle');
-  const mInfo   = document.getElementById('mInfo');
-  const mCurr   = document.getElementById('mCurr');
-  const mTotal  = document.getElementById('mTotal');
-  const mBar    = document.getElementById('mBar');
-  const mMinus  = document.getElementById('mMinus');
-  const mPlus   = document.getElementById('mPlus');
+  const mInfo = document.getElementById('mInfo');
+  const mNextEpInfo = document.getElementById('mNextEpInfo');
+  const mPrevEp = document.getElementById('mPrevEp');
+  const mEpNum = document.getElementById('mEpNum');
+  const mNextEp = document.getElementById('mNextEp');
   const mMarkDone = document.getElementById('mMarkDone');
-  const mReset  = document.getElementById('mReset');
+  const mSeasonSelect = document.getElementById('mSeasonSelect');
   const mDelete = document.getElementById('mDelete');
   const mClose  = document.getElementById('mClose');
 
@@ -377,6 +410,7 @@
     for (const s of sorted) {
       const card = document.createElement('div');
       card.className = 'card';
+      card.style.flexDirection = 'column'; // Asegurar dirección vertical
 
       // Solo imagen del póster, sin enlace
       const imgEl = document.createElement('img');
@@ -384,6 +418,10 @@
       imgEl.src = s.poster || '';
       imgEl.alt = s.title;
       imgEl.onerror = () => { imgEl.style.display = 'none'; };
+
+      const title = document.createElement('div');
+      title.className = 'title';
+      title.textContent = s.title;
 
       // Indicador de estado arriba a la izquierda
       const stateDiv = document.createElement('div');
@@ -395,11 +433,7 @@
       } else {
         stateDiv.textContent = 'Viendo';
       }
-      card.appendChild(stateDiv);
-
-      const title = document.createElement('div');
-      title.className = 'title';
-      title.textContent = s.title;
+      imgEl.parentNode?.insertBefore(stateDiv, imgEl); // No es visible con el nuevo layout, pero se mantiene la lógica
 
       // Estrella y votos arriba a la derecha
       const votesBox = document.createElement('div');
@@ -417,10 +451,18 @@
       votesBox.style.display = 'flex';
       votesBox.style.alignItems = 'center';
       votesBox.innerHTML = `<span style="font-size:1.2em;">★</span> <span style="margin-left:4px;">${s.votes !== undefined ? s.votes : '0'}</span>`;
+      
+      // Contenedor para la imagen y los elementos superpuestos
+      const imageContainer = document.createElement('div');
+      imageContainer.style.position = 'relative';
 
-      card.appendChild(imgEl);
-      card.appendChild(votesBox);
+      // Orden: Título primero, luego el contenedor con la imagen y sus badges.
       card.appendChild(title);
+      card.appendChild(imageContainer);
+
+      imageContainer.appendChild(imgEl);
+      imageContainer.appendChild(votesBox);
+      imageContainer.appendChild(stateDiv);
 
       // Bloque de estado del próximo episodio debajo del póster
       let nextEpNum = (s.curr || 0) + 1;
@@ -454,18 +496,16 @@
       const nextBlock = document.createElement('div');
       nextBlock.style.position = 'absolute';
       nextBlock.style.left = '0';
-      nextBlock.style.right = '0';
       nextBlock.style.bottom = '0';
+      nextBlock.style.width = '100%';
       nextBlock.style.background = nextBg;
       nextBlock.style.color = nextColor;
       nextBlock.style.fontWeight = 'bold';
-      nextBlock.style.fontSize = '1rem';
-      nextBlock.style.padding = '7px 0';
+      nextBlock.style.fontSize = '0.9rem';
+      nextBlock.style.padding = '8px 0';
       nextBlock.style.textAlign = 'center';
-      nextBlock.style.borderBottomLeftRadius = '12px';
-      nextBlock.style.borderBottomRightRadius = '12px';
       nextBlock.textContent = nextInfo;
-      card.appendChild(nextBlock);
+      imageContainer.appendChild(nextBlock);
 
       card.onclick = () => openModal(s);
 
@@ -474,167 +514,126 @@
   }
 
   function openModal(show){
+    currentShow = show;
     mPoster.src = show.poster || '';
     mTitle.textContent = show.title;
     mInfo.textContent = `${show.year || ''} • ${show.type || ''}`;
 
-    // Moderno: mostrar si el próximo episodio está disponible o la fecha
-    let nextInfo = '';
-    let nextEpNum = (show.curr || 0) + 1;
-    let nextEpDate = null;
-    if (show.episodes && Array.isArray(show.episodes) && show.episodes.length >= nextEpNum) {
-      const ep = show.episodes[nextEpNum - 1];
-      nextEpDate = ep?.airdate;
-    }
-    if (nextEpDate) {
-      const today = new Date();
-      const airDate = new Date(nextEpDate);
-      // Si la fecha es igual o anterior a hoy, está disponible
-      if (airDate <= today) {
-        nextInfo = `Próximo episodio (${nextEpNum}): Disponible`;
-      } else {
-        nextInfo = `Próximo episodio (${nextEpNum}): ${nextEpDate}`;
-      }
-    } else {
-      nextInfo = `Próximo episodio (${nextEpNum}): No disponible`;
-    }
-    // Agrega el bloque visual
-    const nextDiv = document.createElement('div');
-    nextDiv.style.marginTop = '8px';
-    nextDiv.style.fontSize = '1.05rem';
-    nextDiv.style.fontWeight = 'bold';
-    nextDiv.style.color = (nextEpDate && new Date(nextEpDate) > new Date()) ? '#fbbf24' : 'var(--muted)';
-    nextDiv.style.background = (nextEpDate && new Date(nextEpDate) > new Date()) ? 'rgba(251,191,36,0.18)' : 'rgba(156,163,175,0.08)';
-    nextDiv.style.padding = '7px 12px';
-    nextDiv.style.borderRadius = '8px';
-    nextDiv.style.textAlign = 'center';
-    nextDiv.textContent = nextInfo;
-    // Limpia y agrega
-    mInfo.textContent = `${show.year || ''} • ${show.type || ''}`;
-    mInfo.appendChild(nextDiv);
-
-    // --- Nuevo control moderno para episodios ---
-    // Elimina controles previos
-    const controls = mInfo.parentElement.querySelector('.controls');
-    if (controls) controls.remove();
-    // Crea nuevo bloque de controles
-    const modernControls = document.createElement('div');
-    modernControls.className = 'controls';
-    modernControls.style.justifyContent = 'center';
-    modernControls.style.marginTop = '10px';
-
-    // Flechas juntas, tamaño compacto
-    const arrowGroup = document.createElement('span');
-    arrowGroup.style.display = 'inline-flex';
-    arrowGroup.style.alignItems = 'center';
-    arrowGroup.style.gap = '2px';
-
-    // Botón retroceder
-    const prevBtn = document.createElement('button');
-    prevBtn.textContent = '⟨';
-    prevBtn.style.fontSize = '1rem';
-    prevBtn.style.background = '#222';
-    prevBtn.style.color = '#fbbf24';
-    prevBtn.style.border = '1px solid var(--line)';
-    prevBtn.style.borderRadius = '6px';
-    prevBtn.style.padding = '4px 8px';
-    prevBtn.onclick = async ()=>{
-      show.curr = Math.max(0,(show.curr||0)-1);
-      await save(shows); render(); openModal(show);
-    };
-
-    // Número de episodio
-    const epNum = document.createElement('span');
-    epNum.textContent = ` Episodio ${show.curr || 0} de ${show.total || 0} `;
-    epNum.style.fontWeight = 'bold';
-    epNum.style.fontSize = '.95rem';
-    epNum.style.color = '#fff';
-    epNum.style.background = 'rgba(0,0,0,0.13)';
-    epNum.style.borderRadius = '6px';
-    epNum.style.padding = '4px 8px';
-    epNum.style.margin = '0 2px';
-
-    // Botón avanzar
-    const nextBtn = document.createElement('button');
-    nextBtn.textContent = '⟩';
-    nextBtn.style.fontSize = '1rem';
-    nextBtn.style.background = '#222';
-    nextBtn.style.color = '#fbbf24';
-    nextBtn.style.border = '1px solid var(--line)';
-    nextBtn.style.borderRadius = '6px';
-    nextBtn.style.padding = '4px 8px';
-    nextBtn.onclick = async ()=>{
-      show.curr = Math.min(show.total||(show.curr||0)+1,(show.curr||0)+1);
-      await save(shows); render(); openModal(show);
-    };
-
-    arrowGroup.appendChild(prevBtn);
-    arrowGroup.appendChild(epNum);
-    arrowGroup.appendChild(nextBtn);
-    modernControls.appendChild(arrowGroup);
-
-    // Inserta el control moderno debajo del bloque de info
-    mInfo.parentElement.insertBefore(modernControls, mInfo.nextSibling);
-
-    mTotal.textContent = `de ${show.total || 0}`;
-    const percent = show.total ? (show.curr || 0)/show.total*100 : 0;
-    mBar.style.width = percent+'%';
-
-    // Solo botón Marcar como terminada y temporada actual
-    const bottomControls = mb.querySelector('.bottom .controls');
-    if (bottomControls) {
-      bottomControls.innerHTML = '';
-      // Marcar como terminada
-      const markBtn = document.createElement('button');
-      markBtn.className = 'btn-ghost';
-      markBtn.style.border = '1px solid var(--line)';
-      markBtn.textContent = (show.curr >= show.total) ? 'Desmarcar terminada' : 'Marcar como terminada';
-      markBtn.onclick = async ()=>{
-        if((show.curr||0) >= (show.total||0)){ show.curr = 0; } else { show.curr = show.total || 0; }
-        await save(shows); render(); openModal(show);
-      };
-      bottomControls.appendChild(markBtn);
-
-      // Mostrar temporada actual según episodio
-      let seasonText = '';
-      if (show.episodes && Array.isArray(show.episodes) && show.curr > 0 && show.episodes.length >= show.curr) {
-        const ep = show.episodes[show.curr - 1];
-        if (ep && ep.season) {
-          seasonText = `Temporada ${ep.season}`;
-        }
-      }
-      if (seasonText) {
-        const seasonBadge = document.createElement('span');
-        seasonBadge.textContent = seasonText;
-        seasonBadge.style.marginLeft = '12px';
-        seasonBadge.style.background = 'rgba(34,197,94,0.18)';
-        seasonBadge.style.color = '#22c55e';
-        seasonBadge.style.fontWeight = 'bold';
-        seasonBadge.style.fontSize = '1rem';
-        seasonBadge.style.padding = '6px 14px';
-        seasonBadge.style.borderRadius = '999px';
-        bottomControls.appendChild(seasonBadge);
-      }
-    }
-
-    // Centrar los botones Eliminar y Cerrar
-    const deleteCloseControls = mb.querySelectorAll('.bottom .controls')[1];
-    if (deleteCloseControls) {
-      deleteCloseControls.style.justifyContent = 'center';
-      deleteCloseControls.style.display = 'flex';
-      deleteCloseControls.style.gap = '16px';
-    }
-
+    updateModalContent(show);
     mb.style.display='flex';
-
-    mCurr.value = show.curr || 0;
-    mCurr.onchange = async ()=>{ show.curr = Number(mCurr.value); await save(shows); render(); openModal(show); };
-    mDelete.onclick = async ()=>{ shows = shows.filter(s=>s.id!==show.id); await deleteFromDB(show.id); render(); mb.style.display='none'; };
-    mClose.onclick = ()=>{ mb.style.display='none'; };
   }
 
+  function getNextEpisodeInfo(show) {
+      const nextEpNum = (show.curr || 0) + 1;
+      if (!show.episodes || !Array.isArray(show.episodes) || show.episodes.length < nextEpNum) {
+          return { text: `Próximo episodio (${nextEpNum}): No disponible`, isUpcoming: false };
+      }
+      const nextEp = show.episodes[nextEpNum - 1];
+      const airDate = nextEp?.airdate ? new Date(nextEp.airdate) : null;
+      if (!airDate) {
+          return { text: `Próximo episodio (${nextEpNum}): No disponible`, isUpcoming: false };
+      }
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      airDate.setHours(0,0,0,0);
+
+      if (airDate > today) {
+          return { text: `Próximo episodio (${nextEpNum}): ${nextEp.airdate}`, isUpcoming: true };
+      }
+      return { text: `Próximo episodio (${nextEpNum}): Disponible`, isUpcoming: false };
+  }
+
+  function updateModalContent(show) {
+    const { text, isUpcoming } = getNextEpisodeInfo(show);
+    mNextEpInfo.textContent = text;
+    mNextEpInfo.className = 'next-ep-info ' + (isUpcoming ? 'upcoming' : 'available');
+
+    // --- Lógica para mostrar episodio por temporada ---
+    if (show.episodes && show.curr > 0 && show.episodes[show.curr - 1]) {
+      const currentEp = show.episodes[show.curr - 1];
+      const currentSeasonNum = currentEp.season;
+      const epNumInSeason = currentEp.number;
+
+      const episodesInSeason = show.episodes.filter(ep => ep.season === currentSeasonNum);
+      const totalEpsInSeason = episodesInSeason.length;
+
+      mEpNum.textContent = `Episodio ${epNumInSeason} de ${totalEpsInSeason}`;
+    } else {
+      // Fallback si no hay datos de episodios
+      mEpNum.textContent = `Episodio ${show.curr || 0} de ${show.total || '?'}`;
+    }
+
+    const isDone = (show.total || 0) > 0 && (show.curr || 0) >= show.total;
+    mMarkDone.textContent = isDone ? 'Desmarcar terminada' : 'Marcar como terminada';
+
+    // --- Lógica para el selector de temporada ---
+    mSeasonSelect.innerHTML = '';
+    if (show.episodes && Array.isArray(show.episodes) && show.episodes.length > 0) {
+      const seasons = [...new Set(show.episodes.map(ep => ep.season))].sort((a,b) => a - b);
+      let currentSeason = -1;
+      if (show.curr > 0 && show.episodes[show.curr - 1]) {
+        currentSeason = show.episodes[show.curr - 1].season;
+      }
+
+      seasons.forEach(seasonNum => {
+        const option = document.createElement('option');
+        option.value = seasonNum;
+        option.textContent = `Temporada ${seasonNum}`;
+        if (seasonNum === currentSeason) {
+          option.selected = true;
+        }
+        mSeasonSelect.appendChild(option);
+      });
+
+      mSeasonSelect.style.display = 'inline-block';
+    } else {
+      mSeasonSelect.style.display = 'none';
+    }
+  }
+
+  async function updateShow(updateFn) {
+    if (!currentShow) return;
+    updateFn(currentShow);
+    await saveShow(currentShow);
+    updateModalContent(currentShow);
+    render();
+  }
+
+  mSeasonSelect.onchange = () => {
+    if (!currentShow || !currentShow.episodes) return;
+    const selectedSeason = parseInt(mSeasonSelect.value, 10);
+    // Encontrar el primer episodio de la temporada seleccionada
+    const firstEpisodeOfSeason = currentShow.episodes.find(ep => ep.season === selectedSeason);
+    if (firstEpisodeOfSeason) {
+      // El número de episodio es `ep.number` en la API, pero nuestro `curr` es un índice basado en 1
+      // Buscamos el índice del primer episodio de la temporada en la lista completa
+      const episodeIndex = currentShow.episodes.findIndex(ep => ep.id === firstEpisodeOfSeason.id);
+      updateShow(s => { s.curr = episodeIndex + 1; });
+    }
+  };
+
+  mPrevEp.onclick = () => updateShow(s => { s.curr = Math.max(0, (s.curr || 0) - 1); });
+  mNextEp.onclick = () => updateShow(s => { s.curr = Math.min((s.total || (s.curr || 0) + 1), (s.curr || 0) + 1); });
+  mMarkDone.onclick = () => updateShow(s => {
+    const isDone = (s.total || 0) > 0 && (s.curr || 0) >= s.total;
+    s.curr = isDone ? 0 : (s.total || 0);
+  });
+  mDelete.onclick = async () => {
+    if (!currentShow) return;
+    shows = shows.filter(s => s.id !== currentShow.id);
+    await deleteFromDB(currentShow.id);
+    render();
+    mb.style.display = 'none';
+  };
+  mClose.onclick = () => { mb.style.display = 'none'; };
+
   toggleFilterBtn.onclick = ()=>{ hideDone=!hideDone; setHideDone(hideDone); updateFilterButton(); render(); };
-  clearBtn.onclick = async ()=>{ shows=[]; const snapshot = await getDocs(coll); for(const d of snapshot.docs){ await deleteFromDB(d.id); } render(); };
+  clearBtn.onclick = async ()=>{
+    if (!confirm('¿Estás seguro de que quieres eliminar TODAS las series? Esta acción no se puede deshacer.')) return;
+    for(const s of shows){ await deleteFromDB(s.id); }
+    shows=[];
+    render();
+  };
 
   updateFilterButton();
   render();
@@ -694,7 +693,7 @@ function renderDropdown(){
       el.onclick = async () => {
         if (shows.find(s => s.id === r.id)) { alert('Ya está en tu lista'); return; }
         shows.unshift({ ...r });
-        await save(shows);
+        await saveAllShows(shows); // Guardar todo al añadir, podría optimizarse a solo guardar el nuevo
         render();
         drop.style.display = 'none';
         q.value = '';
