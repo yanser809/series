@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SERIES — Watchlist</title>
+  <title>Series Watchlist</title>
 
 <style>
   /* ===== TODO TU CSS ORIGINAL ===== */
@@ -25,10 +25,16 @@
   }
   .wrap{max-width:1200px; margin:0 auto; padding:20px 16px}
   .hero{ display:flex; flex-direction:column; gap:14px; align-items:center; justify-content:center; padding:18px 0 8px 0; }
+  /* TVMaze‑style header layout */
+  .hero{ display:flex; flex-direction:row; align-items:center; justify-content:space-between; padding:18px 0 8px 0; }
+  /* Title styling similar to TVMaze */
+  .hero .badges{ margin-left:0; margin-right:12px; }
+  /* Search bar on the right */
+  .hero .row{ margin-left:auto; }
   .badges{ display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap; transform:translateZ(0); }
   .badge{
-    font-family:'Cinzel', serif; font-weight:900; letter-spacing:.2rem;
-    font-size: clamp(1.6rem, 3vw, 2.2rem); line-height:1;
+    font-family:'Cinzel', serif; font-weight:700; letter-spacing:.15rem;
+    font-size: clamp(1.4rem, 2.5vw, 1.8rem); line-height:1;
     color:#fff; padding:8px 18px; border-radius:10px; border:1px solid #4c0b0f;
     background:linear-gradient(90deg,var(--accent),var(--accent-2));
     text-shadow:0 1px 2px rgba(0,0,0,.6);
@@ -46,14 +52,14 @@
   /* Buscador grande */
   .searchbox{
     position:relative; flex:1;
-    min-width:400px;
-    max-width:900px;
+    min-width:300px;
+    max-width:600px;
   }
   .searchbox input{
     width:100%;
-    height:60px;
-    font-size:1.2rem;
-    padding:14px 18px;
+    height:40px;
+    font-size:1rem;
+    padding:10px 12px;
     border-radius:12px;
   }
 
@@ -61,28 +67,83 @@
   .dropdown{
     position:absolute; top:110%; left:0; right:0; background:#0b1220; border:1px solid var(--line); border-radius:12px;
     box-shadow:0 14px 40px rgba(0,0,0,.45); max-height:480px; overflow:auto; display:none; padding:6px;
+    z-index:20;
   }
   .opt{
-    display:grid; grid-template-columns:68px 1fr; gap:12px;
-    padding:10px; border-bottom:1px solid #111827; align-items:center; cursor:pointer; border-radius:8px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #111827;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background .18s, box-shadow .18s, transform .18s;
+    box-shadow: 0 2px 8px rgba(0,0,0,.10);
   }
-  .opt:hover{ background:#0f172a }
-  .opt.active{ outline:2px solid rgba(229,9,20,.5); background:#0f172a; }
+  .opt:hover{
+    background: #181f2e;
+    box-shadow: 0 8px 24px rgba(229,9,20,.10), 0 2px 8px rgba(0,0,0,.18);
+    transform: scale(1.03);
+  }
+  .opt.active{
+    outline: 2px solid rgba(229,9,20,.5);
+    background: #181f2e;
+  }
   .mini{
-    width:68px; height:102px; border-radius:8px; border:1px solid var(--line); background:#111827; object-fit:cover; display:block;
+    width: 54px;
+    height: 80px;
+    border-radius: 10px;
+    border: 2px solid #222;
+    background: #111827;
+    object-fit: cover;
+    display: block;
+    box-shadow: 0 4px 16px rgba(0,0,0,.18);
+    transition: transform .18s, box-shadow .18s;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
   }
   .mini.placeholder{
-    display:flex; align-items:center; justify-content:center; font-size:.75rem; color:#666; background:linear-gradient(180deg,#0f172a,#0b1220);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .75rem;
+    color: #666;
+    background: linear-gradient(180deg,#0f172a,#0b1220);
+  }
+  .opt:hover .mini{
+    transform: scale(1.08);
+    box-shadow: 0 12px 32px rgba(229,9,20,.18), 0 4px 16px rgba(0,0,0,.22);
+  }
+  .opt .info{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
   }
   .opt .t{
-    font-weight:700; font-size:1.02rem; line-height:1.25; white-space:normal; word-break:break-word;
+    font-weight: 700;
+    font-size: 1.08rem;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+    max-width: 220px;
   }
-  .opt .s{ color:var(--muted); font-size:.95rem; margin-top:2px; }
+  .opt .s{
+    color: var(--muted);
+    font-size: .95rem;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+  }
   .opt mark{
-    background:rgba(229,9,20,.28);
-    color:#fff;
-    padding:0 .1em;
-    border-radius:3px;
+    background: rgba(229,9,20,.28);
+    color: #fff;
+    padding: 0 .1em;
+    border-radius: 3px;
   }
 
   /* Grid */
@@ -95,6 +156,8 @@
   }
   .card:hover{ transform:translateY(-3px) scale(1.03); box-shadow:0 16px 36px rgba(0,0,0,.35); filter:brightness(1.03); }
   .poster{ width:100%; aspect-ratio:2/3; object-fit:cover; background:#101623; display:block }
+  /* Override poster size to 210x295px */
+  .poster{ width:210px; height:340px; }
   .title{
     position:absolute; left:8px; right:8px; bottom:8px;
     background:linear-gradient(180deg,transparent,rgba(0,0,0,.88));
@@ -181,6 +244,7 @@
   <div class="wrap">
     <div class="hero">
       <div class="badges">
+        <img src="https://e7.pngegg.com/pngimages/243/592/png-clipart-popcorn-cinema-fizzy-drinks-film-popcorn-film-almaty.png" alt="Popcorn" style="width:32px;height:auto;margin-right:8px;"/>
         <div class="badge">SERIES</div>
         <div class="badge alt">WATCHLIST</div>
       </div>
@@ -314,25 +378,94 @@
       const card = document.createElement('div');
       card.className = 'card';
 
+      // Solo imagen del póster, sin enlace
       const imgEl = document.createElement('img');
       imgEl.className = 'poster';
       imgEl.src = s.poster || '';
       imgEl.alt = s.title;
       imgEl.onerror = () => { imgEl.style.display = 'none'; };
 
+      // Indicador de estado arriba a la izquierda
+      const stateDiv = document.createElement('div');
+      stateDiv.className = 'state';
+      const isDone = (s.total || 0) > 0 && (s.curr || 0) >= s.total;
+      if (isDone) {
+        stateDiv.textContent = 'Terminada';
+        stateDiv.classList.add('done');
+      } else {
+        stateDiv.textContent = 'Viendo';
+      }
+      card.appendChild(stateDiv);
+
       const title = document.createElement('div');
       title.className = 'title';
       title.textContent = s.title;
 
-      const badge = s.next ? document.createElement('span') : null;
-      if (badge){
-        badge.className = 'notify';
-        badge.textContent = s.next;
-        title.appendChild(badge);
-      }
+      // Estrella y votos arriba a la derecha
+      const votesBox = document.createElement('div');
+      votesBox.style.position = 'absolute';
+      votesBox.style.top = '8px';
+      votesBox.style.right = '8px';
+      votesBox.style.zIndex = '2';
+      votesBox.style.background = 'rgba(0,0,0,0.65)';
+      votesBox.style.border = '1px solid var(--line)';
+      votesBox.style.borderRadius = '999px';
+      votesBox.style.padding = '3px 10px';
+      votesBox.style.fontSize = '1.08rem';
+      votesBox.style.fontWeight = 'bold';
+      votesBox.style.color = '#fbbf24';
+      votesBox.style.display = 'flex';
+      votesBox.style.alignItems = 'center';
+      votesBox.innerHTML = `<span style="font-size:1.2em;">★</span> <span style="margin-left:4px;">${s.votes !== undefined ? s.votes : '0'}</span>`;
 
       card.appendChild(imgEl);
+      card.appendChild(votesBox);
       card.appendChild(title);
+
+      // Bloque de estado del próximo episodio debajo del póster
+      let nextEpNum = (s.curr || 0) + 1;
+      let nextEpDate = null;
+      let nextInfo = '';
+      let nextColor = '';
+      let nextBg = '';
+      if (s.episodes && Array.isArray(s.episodes) && s.episodes.length >= nextEpNum) {
+        const ep = s.episodes[nextEpNum - 1];
+        nextEpDate = ep?.airdate;
+      }
+      if (nextEpDate) {
+        const today = new Date();
+        today.setHours(0,0,0,0); // solo fecha
+        const airDate = new Date(nextEpDate);
+        airDate.setHours(0,0,0,0);
+        if (airDate < today) {
+          nextInfo = `Episodio ${nextEpNum}: Disponible`;
+          nextColor = '#22c55e'; // verde
+          nextBg = 'rgba(34,197,94,0.18)';
+        } else {
+          nextInfo = `Episodio ${nextEpNum}: ${nextEpDate}`;
+          nextColor = '#fbbf24'; // amarillo claro
+          nextBg = 'rgba(251,191,36,0.18)';
+        }
+      } else {
+        nextInfo = `Episodio ${nextEpNum}: No disponible`;
+        nextColor = 'var(--muted)';
+        nextBg = 'rgba(156,163,175,0.08)';
+      }
+      const nextBlock = document.createElement('div');
+      nextBlock.style.position = 'absolute';
+      nextBlock.style.left = '0';
+      nextBlock.style.right = '0';
+      nextBlock.style.bottom = '0';
+      nextBlock.style.background = nextBg;
+      nextBlock.style.color = nextColor;
+      nextBlock.style.fontWeight = 'bold';
+      nextBlock.style.fontSize = '1rem';
+      nextBlock.style.padding = '7px 0';
+      nextBlock.style.textAlign = 'center';
+      nextBlock.style.borderBottomLeftRadius = '12px';
+      nextBlock.style.borderBottomRightRadius = '12px';
+      nextBlock.textContent = nextInfo;
+      card.appendChild(nextBlock);
 
       card.onclick = () => openModal(s);
 
@@ -344,23 +477,158 @@
     mPoster.src = show.poster || '';
     mTitle.textContent = show.title;
     mInfo.textContent = `${show.year || ''} • ${show.type || ''}`;
-    mCurr.value = show.curr || 0;
+
+    // Moderno: mostrar si el próximo episodio está disponible o la fecha
+    let nextInfo = '';
+    let nextEpNum = (show.curr || 0) + 1;
+    let nextEpDate = null;
+    if (show.episodes && Array.isArray(show.episodes) && show.episodes.length >= nextEpNum) {
+      const ep = show.episodes[nextEpNum - 1];
+      nextEpDate = ep?.airdate;
+    }
+    if (nextEpDate) {
+      const today = new Date();
+      const airDate = new Date(nextEpDate);
+      // Si la fecha es igual o anterior a hoy, está disponible
+      if (airDate <= today) {
+        nextInfo = `Próximo episodio (${nextEpNum}): Disponible`;
+      } else {
+        nextInfo = `Próximo episodio (${nextEpNum}): ${nextEpDate}`;
+      }
+    } else {
+      nextInfo = `Próximo episodio (${nextEpNum}): No disponible`;
+    }
+    // Agrega el bloque visual
+    const nextDiv = document.createElement('div');
+    nextDiv.style.marginTop = '8px';
+    nextDiv.style.fontSize = '1.05rem';
+    nextDiv.style.fontWeight = 'bold';
+    nextDiv.style.color = (nextEpDate && new Date(nextEpDate) > new Date()) ? '#fbbf24' : 'var(--muted)';
+    nextDiv.style.background = (nextEpDate && new Date(nextEpDate) > new Date()) ? 'rgba(251,191,36,0.18)' : 'rgba(156,163,175,0.08)';
+    nextDiv.style.padding = '7px 12px';
+    nextDiv.style.borderRadius = '8px';
+    nextDiv.style.textAlign = 'center';
+    nextDiv.textContent = nextInfo;
+    // Limpia y agrega
+    mInfo.textContent = `${show.year || ''} • ${show.type || ''}`;
+    mInfo.appendChild(nextDiv);
+
+    // --- Nuevo control moderno para episodios ---
+    // Elimina controles previos
+    const controls = mInfo.parentElement.querySelector('.controls');
+    if (controls) controls.remove();
+    // Crea nuevo bloque de controles
+    const modernControls = document.createElement('div');
+    modernControls.className = 'controls';
+    modernControls.style.justifyContent = 'center';
+    modernControls.style.marginTop = '10px';
+
+    // Flechas juntas, tamaño compacto
+    const arrowGroup = document.createElement('span');
+    arrowGroup.style.display = 'inline-flex';
+    arrowGroup.style.alignItems = 'center';
+    arrowGroup.style.gap = '2px';
+
+    // Botón retroceder
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = '⟨';
+    prevBtn.style.fontSize = '1rem';
+    prevBtn.style.background = '#222';
+    prevBtn.style.color = '#fbbf24';
+    prevBtn.style.border = '1px solid var(--line)';
+    prevBtn.style.borderRadius = '6px';
+    prevBtn.style.padding = '4px 8px';
+    prevBtn.onclick = async ()=>{
+      show.curr = Math.max(0,(show.curr||0)-1);
+      await save(shows); render(); openModal(show);
+    };
+
+    // Número de episodio
+    const epNum = document.createElement('span');
+    epNum.textContent = ` Episodio ${show.curr || 0} de ${show.total || 0} `;
+    epNum.style.fontWeight = 'bold';
+    epNum.style.fontSize = '.95rem';
+    epNum.style.color = '#fff';
+    epNum.style.background = 'rgba(0,0,0,0.13)';
+    epNum.style.borderRadius = '6px';
+    epNum.style.padding = '4px 8px';
+    epNum.style.margin = '0 2px';
+
+    // Botón avanzar
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = '⟩';
+    nextBtn.style.fontSize = '1rem';
+    nextBtn.style.background = '#222';
+    nextBtn.style.color = '#fbbf24';
+    nextBtn.style.border = '1px solid var(--line)';
+    nextBtn.style.borderRadius = '6px';
+    nextBtn.style.padding = '4px 8px';
+    nextBtn.onclick = async ()=>{
+      show.curr = Math.min(show.total||(show.curr||0)+1,(show.curr||0)+1);
+      await save(shows); render(); openModal(show);
+    };
+
+    arrowGroup.appendChild(prevBtn);
+    arrowGroup.appendChild(epNum);
+    arrowGroup.appendChild(nextBtn);
+    modernControls.appendChild(arrowGroup);
+
+    // Inserta el control moderno debajo del bloque de info
+    mInfo.parentElement.insertBefore(modernControls, mInfo.nextSibling);
+
     mTotal.textContent = `de ${show.total || 0}`;
     const percent = show.total ? (show.curr || 0)/show.total*100 : 0;
     mBar.style.width = percent+'%';
 
-    mMarkDone.textContent = (show.curr >= show.total) ? 'Desmarcar terminada' : 'Marcar como terminada';
+    // Solo botón Marcar como terminada y temporada actual
+    const bottomControls = mb.querySelector('.bottom .controls');
+    if (bottomControls) {
+      bottomControls.innerHTML = '';
+      // Marcar como terminada
+      const markBtn = document.createElement('button');
+      markBtn.className = 'btn-ghost';
+      markBtn.style.border = '1px solid var(--line)';
+      markBtn.textContent = (show.curr >= show.total) ? 'Desmarcar terminada' : 'Marcar como terminada';
+      markBtn.onclick = async ()=>{
+        if((show.curr||0) >= (show.total||0)){ show.curr = 0; } else { show.curr = show.total || 0; }
+        await save(shows); render(); openModal(show);
+      };
+      bottomControls.appendChild(markBtn);
+
+      // Mostrar temporada actual según episodio
+      let seasonText = '';
+      if (show.episodes && Array.isArray(show.episodes) && show.curr > 0 && show.episodes.length >= show.curr) {
+        const ep = show.episodes[show.curr - 1];
+        if (ep && ep.season) {
+          seasonText = `Temporada ${ep.season}`;
+        }
+      }
+      if (seasonText) {
+        const seasonBadge = document.createElement('span');
+        seasonBadge.textContent = seasonText;
+        seasonBadge.style.marginLeft = '12px';
+        seasonBadge.style.background = 'rgba(34,197,94,0.18)';
+        seasonBadge.style.color = '#22c55e';
+        seasonBadge.style.fontWeight = 'bold';
+        seasonBadge.style.fontSize = '1rem';
+        seasonBadge.style.padding = '6px 14px';
+        seasonBadge.style.borderRadius = '999px';
+        bottomControls.appendChild(seasonBadge);
+      }
+    }
+
+    // Centrar los botones Eliminar y Cerrar
+    const deleteCloseControls = mb.querySelectorAll('.bottom .controls')[1];
+    if (deleteCloseControls) {
+      deleteCloseControls.style.justifyContent = 'center';
+      deleteCloseControls.style.display = 'flex';
+      deleteCloseControls.style.gap = '16px';
+    }
 
     mb.style.display='flex';
 
-    mMinus.onclick = async ()=>{ show.curr = Math.max(0,(show.curr||0)-1); await save(shows); render(); openModal(show); };
-    mPlus.onclick = async ()=>{ show.curr = Math.min(show.total||(show.curr||0)+1,(show.curr||0)+1); await save(shows); render(); openModal(show); };
+    mCurr.value = show.curr || 0;
     mCurr.onchange = async ()=>{ show.curr = Number(mCurr.value); await save(shows); render(); openModal(show); };
-    mMarkDone.onclick = async ()=>{
-      if((show.curr||0) >= (show.total||0)){ show.curr = 0; } else { show.curr = show.total || 0; }
-      await save(shows); render(); openModal(show);
-    };
-    mReset.onclick = async ()=>{ show.curr = 0; await save(shows); render(); openModal(show); };
     mDelete.onclick = async ()=>{ shows = shows.filter(s=>s.id!==show.id); await deleteFromDB(show.id); render(); mb.style.display='none'; };
     mClose.onclick = ()=>{ mb.style.display='none'; };
   }
@@ -371,38 +639,69 @@
   updateFilterButton();
   render();
 
-  // ===== BUSQUEDA TVMAZE =====
-  async function search(query){
+async function search(query){
     if(!query) return drop.style.display='none';
     const res = await fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(query)}`);
     const data = await res.json();
-    results = data.map(d=>{
+    results = await Promise.all(data.map(async d => {
       const s = d.show;
-      return {id:String(s.id), title:s.name, poster:s.image?.medium||'', total:s._embedded?.episodes?.length||0, curr:0, year: s.premiered?.split('-')[0]||'', type: s.type};
-    });
+      let nextEp = null;
+      let nextDate = null;
+      let episodes = [];
+      let votes = s.rating?.average !== null && s.rating?.average !== undefined ? s.rating.average : 0;
+      try {
+        const epRes = await fetch(`https://api.tvmaze.com/shows/${s.id}/episodes`);
+        episodes = await epRes.json();
+        const today = new Date();
+        const upcoming = episodes.find(ep => ep.airdate && new Date(ep.airdate) > today);
+        if (upcoming) {
+          nextEp = upcoming.number;
+          nextDate = upcoming.airdate;
+        }
+      } catch {}
+      return {
+        id: String(s.id),
+        title: s.name,
+        poster: s.image?.original || s.image?.medium || '',
+        total: episodes.length || 0,
+        curr: 0,
+        year: s.premiered?.split('-')[0] || '',
+        type: s.type,
+        nextEp,
+        nextDate,
+        votes,
+        episodes
+      };
+    }));
     activeIndex=-1;
     renderDropdown();
-  }
+}
+  
 
-  function renderDropdown(){
+function renderDropdown(){
     drop.innerHTML='';
     if(!results.length){ drop.style.display='none'; return; }
     results.forEach((r,i)=>{
       const el = document.createElement('div');
-      el.className='opt'+(i===activeIndex?' active':'');
-      el.innerHTML=`<div class="mini"><img src="${r.poster}" onerror="this.style.display='none'"></div>
-                      <div><div class="t">${r.title}</div><div class="s">${r.year}</div></div>`;
-      el.onclick=async ()=>{
-        if(shows.find(s=>s.id===r.id)){ alert('Ya está en tu lista'); return; }
-        shows.unshift({...r});
+      el.className = 'opt' + (i === activeIndex ? ' active' : '');
+      el.innerHTML = `
+        <div class="mini"><img src="${r.poster}" style="width:100%;height:100%;border-radius:inherit;object-fit:cover;image-rendering:-webkit-optimize-contrast;image-rendering:crisp-edges;" onerror="this.style.display='none'"></div>
+        <div class="info">
+          <div class="t">${r.title}</div>
+          <div class="s">${r.year}</div>
+        </div>
+      `;
+      el.onclick = async () => {
+        if (shows.find(s => s.id === r.id)) { alert('Ya está en tu lista'); return; }
+        shows.unshift({ ...r });
         await save(shows);
         render();
-        drop.style.display='none';
-        q.value='';
+        drop.style.display = 'none';
+        q.value = '';
       };
       drop.appendChild(el);
     });
-    drop.style.display='block';
+    drop.style.display = 'block';
   }
 
   let debounceTimer=null;
