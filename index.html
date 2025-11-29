@@ -7,6 +7,7 @@
 
 <style>
   /* ===== TODO TU CSS ORIGINAL ===== */
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
   :root{
     --bg:#0b0f19; --panel:#0f172a; --card:#111827; --text:#e5e7eb; --muted:#9ca3af;
     --accent:#e50914; --accent-2:#b81d24; --ok:#22c55e; --warn:#f59e0b; --line:#1f2937;
@@ -29,20 +30,6 @@
   .hero{ display:flex; flex-direction:row; align-items:center; justify-content:space-between; padding:18px 0 8px 0; }
   /* Title styling similar to TVMaze */
   .hero .badges{ margin-left:0; margin-right:12px; }
-  /* Search bar on the right */
-  .hero .row{ margin-left:auto; }
-  .badges{ display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap; transform:translateZ(0); }
-  .badge{
-    font-family:'Cinzel', serif; font-weight:700; letter-spacing:.15rem;
-    font-size: clamp(1.4rem, 2.5vw, 1.8rem); line-height:1;
-    color:#fff; padding:8px 18px; border-radius:10px; border:1px solid #4c0b0f;
-    background:linear-gradient(90deg,var(--accent),var(--accent-2));
-    text-shadow:0 1px 2px rgba(0,0,0,.6);
-    box-shadow: 0 6px 20px rgba(229,9,20,.18), inset 0 0 10px rgba(255,255,255,.06);
-    transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
-  }
-  .badge.alt{ background:linear-gradient(90deg,var(--accent-2),var(--accent)); }
-  .badge:hover{ transform:translateY(-2px) scale(1.03); filter:brightness(1.06); box-shadow:0 16px 36px rgba(229,9,20,.25), inset 0 0 12px rgba(255,255,255,.08); }
 
   .header-logo {
     width: 120px;
@@ -54,6 +41,16 @@
     transform: scale(1.05);
     box-shadow: 0 8px 25px rgba(0,0,0,0.3);
   }
+  .header-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem; /* Tamaño grande y audaz */
+    color: var(--accent); /* Rojo Netflix */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+    margin: 0;
+  }
+  .hero .row{ margin-left:auto; }
   .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center; margin-top:10px; }
   input,button{ padding:12px 14px; border-radius:10px; border:1px solid var(--line); background:#0c1222; color:var(--text); }
   button{ cursor:pointer; transition:.2s ease }
@@ -191,7 +188,7 @@
     border:1px solid #14532d; color:#bbf7d0; background:rgba(34,197,94,.22);
   }
   .notify.upcoming{
-    border-color:#7c2d12; color:#fed7aa; background:rgba(245,158,11,.22);
+    border-color:#075985; color:#7dd3fc; background:rgba(56,189,248,.22);
   }
 
   /* Estado VIENDO/TERMINADA */
@@ -254,7 +251,7 @@
   .modal .modern-controls button { font-size: 1rem; background: #222; color: #fbbf24; border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; }
   .modal .ep-num { font-weight: bold; font-size: .95rem; color: #fff; background: rgba(0,0,0,0.13); border-radius: 6px; padding: 4px 8px; margin: 0 2px; }
   .modal .next-ep-info { margin-top: 8px; font-size: 1.05rem; font-weight: bold; padding: 7px 12px; border-radius: 8px; text-align: center; }
-  .modal .next-ep-info.upcoming { color: #fbbf24; background: rgba(251,191,36,0.18); }
+  .modal .next-ep-info.upcoming { color: #38bdf8; background: rgba(56, 189, 248, 0.18); }
   .modal .next-ep-info.available { color: var(--muted); background: rgba(156,163,175,0.08); }
   .modal select#mSeasonSelect {
     background: rgba(34,197,94,0.18); color: #22c55e;
@@ -276,19 +273,15 @@
   <div class="wrap">
     <div class="hero">
       <div style="display: flex; align-items: center; gap: 24px;">
-        <img class="header-logo" src="https://thumbs.dreamstime.com/b/cinema-ensign-movie-time-banner-60575002.jpg">
-        <div class="badges">
-          <div class="badge">Series</div>
-          <div class="badge alt">Watchlist</div>
-        </div>
+        <img class="header-logo" src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjRjFGNEZBIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTIxLDNIM0EyLDIsMCwwLDAsMSw1VjE5YTIsMiwwLDAsMCwyLDJIMjFhMiwyLDAsMCwwLDItMlY1YTIsMiwwLDAsMC0yLTJaTTUsNWgyVjdoLTJaTTUsOWgydjJoLTJaTTUsMTRoMnYyaC0yWk0xOSw1aDJWN2gtMlptMCw1aDJWN2gtMlptMCw0aDJWN2gtMlptLTYsNWgtNWEyLDIsMCwwLDEtMi0yVjEwYTIsMiwwLDAsMSwyLTJoNWEyLDIsMCwwLDEsMiwyVjE3YTIsMiwwLDAsMS0yLDJaIiBzdHlsZT0iZmlsbDojZTVlN2ViOyIvPjxwYXRoIGQ9Ik0xMSwxMHY1YTQuMzUsNC4zNSwwLDAsMCwzLjUtMi41WiIgc3R5bGU9ImZpbGw6I2U1ZTdlYjsiLz48L3N2Zz4=" alt="Logo de la web">
+        <h1 class="header-title">SERIES FAVORITAS</h1>
       </div>
       <div class="row">
         <div class="searchbox">
           <input id="q" type="text" placeholder="Buscar series… (ej. Dark, Friends, The Office)" autocomplete="off"/>
           <div id="drop" class="dropdown"></div>
         </div>
-        <button id="clear" class="btn-ghost">Limpiar</button>
-        <button id="toggleFilter" class="btn-ghost">Ocultar terminadas</button>
+        <button id="toggleFilter" class="btn-ghost">Filtrar terminadas</button>
       </div>
     </div>
   </div>
@@ -371,7 +364,6 @@
 
   const q = document.getElementById('q');
   const drop = document.getElementById('drop');
-  const clearBtn = document.getElementById('clear');
   const grid = document.getElementById('grid');
   const empty = document.getElementById('empty');
   const toggleFilterBtn = document.getElementById('toggleFilter');
@@ -389,7 +381,7 @@
   const mDelete = document.getElementById('mDelete');
   const mClose  = document.getElementById('mClose');
 
-  function updateFilterButton(){ toggleFilterBtn.textContent = hideDone ? 'Mostrar terminadas' : 'Ocultar terminadas'; }
+  function updateFilterButton(){ toggleFilterBtn.textContent = hideDone ? 'Mostrar terminadas' : 'Filtrar terminadas'; }
 
   async function render() {
     grid.innerHTML = '';
@@ -452,18 +444,6 @@
       votesBox.style.alignItems = 'center';
       votesBox.innerHTML = `<span style="font-size:1.2em;">★</span> <span style="margin-left:4px;">${s.votes !== undefined ? s.votes : '0'}</span>`;
       
-      // Contenedor para la imagen y los elementos superpuestos
-      const imageContainer = document.createElement('div');
-      imageContainer.style.position = 'relative';
-
-      // Orden: Título primero, luego el contenedor con la imagen y sus badges.
-      card.appendChild(title);
-      card.appendChild(imageContainer);
-
-      imageContainer.appendChild(imgEl);
-      imageContainer.appendChild(votesBox);
-      imageContainer.appendChild(stateDiv);
-
       // Bloque de estado del próximo episodio debajo del póster
       let nextEpNum = (s.curr || 0) + 1;
       let nextEpDate = null;
@@ -485,8 +465,8 @@
           nextBg = 'rgba(34,197,94,0.18)';
         } else {
           nextInfo = `Episodio ${nextEpNum}: ${nextEpDate}`;
-          nextColor = '#fbbf24'; // amarillo claro
-          nextBg = 'rgba(251,191,36,0.18)';
+          nextColor = '#38bdf8'; // azul cian
+          nextBg = 'rgba(56, 189, 248, 0.18)';
         }
       } else {
         nextInfo = `Episodio ${nextEpNum}: No disponible`;
@@ -494,18 +474,22 @@
         nextBg = 'rgba(156,163,175,0.08)';
       }
       const nextBlock = document.createElement('div');
-      nextBlock.style.position = 'absolute';
-      nextBlock.style.left = '0';
-      nextBlock.style.bottom = '0';
-      nextBlock.style.width = '100%';
       nextBlock.style.background = nextBg;
       nextBlock.style.color = nextColor;
       nextBlock.style.fontWeight = 'bold';
       nextBlock.style.fontSize = '0.9rem';
-      nextBlock.style.padding = '8px 0';
+      nextBlock.style.padding = '8px 10px';
       nextBlock.style.textAlign = 'center';
+      nextBlock.style.width = '100%';
       nextBlock.textContent = nextInfo;
-      imageContainer.appendChild(nextBlock);
+
+      // --- CORRECCIÓN ---
+      // Crear el contenedor de la imagen y añadir los elementos en el orden correcto.
+      const imageContainer = document.createElement('div');
+      imageContainer.style.position = 'relative';
+      imageContainer.style.width = '100%';
+      imageContainer.append(imgEl, votesBox, stateDiv); // Añadir primero la imagen, luego los indicadores superpuestos.
+      card.append(imageContainer, title, nextBlock); // Añadir todo a la tarjeta principal.
 
       card.onclick = () => openModal(s);
 
@@ -613,7 +597,7 @@
   };
 
   mPrevEp.onclick = () => updateShow(s => { s.curr = Math.max(0, (s.curr || 0) - 1); });
-  mNextEp.onclick = () => updateShow(s => { s.curr = Math.min((s.total || (s.curr || 0) + 1), (s.curr || 0) + 1); });
+  mNextEp.onclick = () => updateShow(s => { s.curr = Math.min(s.total || Infinity, (s.curr || 0) + 1); });
   mMarkDone.onclick = () => updateShow(s => {
     const isDone = (s.total || 0) > 0 && (s.curr || 0) >= s.total;
     s.curr = isDone ? 0 : (s.total || 0);
@@ -628,12 +612,6 @@
   mClose.onclick = () => { mb.style.display = 'none'; };
 
   toggleFilterBtn.onclick = ()=>{ hideDone=!hideDone; setHideDone(hideDone); updateFilterButton(); render(); };
-  clearBtn.onclick = async ()=>{
-    if (!confirm('¿Estás seguro de que quieres eliminar TODAS las series? Esta acción no se puede deshacer.')) return;
-    for(const s of shows){ await deleteFromDB(s.id); }
-    shows=[];
-    render();
-  };
 
   updateFilterButton();
   render();
@@ -692,8 +670,9 @@ function renderDropdown(){
       `;
       el.onclick = async () => {
         if (shows.find(s => s.id === r.id)) { alert('Ya está en tu lista'); return; }
-        shows.unshift({ ...r });
-        await saveAllShows(shows); // Guardar todo al añadir, podría optimizarse a solo guardar el nuevo
+        const newShow = { ...r };
+        await saveShow(newShow); // Guardar solo la nueva serie
+        shows.unshift(newShow);
         render();
         drop.style.display = 'none';
         q.value = '';
